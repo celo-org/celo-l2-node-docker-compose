@@ -28,6 +28,23 @@ services:
     ports:
       - ${PORT__HEALTHCHECK_METRICS:-7300}:7300
 
+  eigenda-proxy:
+    platform: linux/amd64
+    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/eigenda-proxy:v1.4.1
+    restart: unless-stopped
+    stop_grace_period: 5m
+    entrypoint: /scripts/start-eigenda-proxy.sh
+    volumes:
+      - eigenda-data:/data
+      - ./scripts/:/scripts
+    ports:
+      - ${PORT_EIGENDA_PROXY:-4242}:4242
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      # If EIGENDA_PROXY_ENDPOINT is set, then we set replicas to 0
+      replicas: ${EIGENDA_PROXY_ENDPOINT:+0}
+
   op-geth:
     platform: linux/amd64
     image: us-west1-docker.pkg.dev/blockchaintestsglobaltestnet/dev-images/op-geth:70a7e9baa9b6fc4ef47365a5186ebd7aac53dbf5
