@@ -89,8 +89,12 @@ The default configuration can be used as is for running an Alfajores snap sync n
 If you want to run a Baklava node instead, set
 ```
 NETWORK_NAME=baklava
-HEALTHCHECK__REFERENCE_RPC_PROVIDER=https://baklava-forno.celo-testnet.org
-OP_GETH__HISTORICAL_RPC=https://baklava-forno.celo-testnet.org
+# Don't use these while baklava L1 is still running
+# HEALTHCHECK__REFERENCE_RPC_PROVIDER=https://baklava-forno.celo-testnet.org
+# OP_GETH__HISTORICAL_RPC=https://baklava-forno.celo-testnet.org
+# Use these instead:
+HEALTHCHECK__REFERENCE_RPC_PROVIDER=https://baklava-forno.baklava.celo-testnet.org
+OP_GETH__HISTORICAL_RPC=https://baklava-forno.baklava.celo-testnet.org
 ```
 
 ### Optional configurations
