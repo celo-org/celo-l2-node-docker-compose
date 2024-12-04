@@ -42,9 +42,9 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     deploy:
-      # If USE_LOCAL_EIGENDA_PROXY is unset, then we set replicas to 0,
-      # otherwise use the value of USE_LOCAL_EIGENDA_PROXY which should be 1.
-      replicas: ${USE_LOCAL_EIGENDA_PROXY:-0}
+      # If USE_LOCAL_EIGENDA_PROXY is unset or empty, then we set replicas to 1,
+      # otherwise use the value of USE_LOCAL_EIGENDA_PROXY which should be 0.
+      replicas: ${USE_LOCAL_EIGENDA_PROXY:-1}
 
   op-geth:
     platform: linux/amd64
