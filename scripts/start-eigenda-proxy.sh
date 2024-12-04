@@ -20,7 +20,7 @@ exec eigenda-proxy \
   --addr=0.0.0.0 \
   --port=4242 \
   --eigenda-disperser-rpc=disperser-holesky.eigenda.xyz:443 \
-  --eigenda-eth-rpc=https://ethereum-holesky-rpc.publicnode.com \
+  --eigenda-eth-rpc=$OP_NODE__RPC_ENDPOINT \
   --eigenda-signer-private-key-hex=$(head -c 32 /dev/urandom | xxd -p -c 32) \
   --eigenda-svc-manager-addr=0xD4A7E1Bd8015057293f0D0A557088c286942e84b \
   --eigenda-status-query-timeout=45m \
