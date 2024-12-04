@@ -129,5 +129,4 @@ volumes:
   grafana_data:
   influxdb_data:
   shared:
-  eigenda-data:
   torrent_downloads:
