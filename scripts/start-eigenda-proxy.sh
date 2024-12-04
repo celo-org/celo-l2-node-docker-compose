@@ -1,10 +1,12 @@
 #!/bin/sh
 set -e
 
+# Retrieve kzg commitment files, links for points files sourced from:
+# https://github.com/Layr-Labs/eigenda-operator-setup/blob/51857209ab9c49ca8b639d1e9a977d5bff48ecda/srs_setup.sh
 if [ ! -e /data/verified ]; then
-	wget https://srs-mainnet.s3.amazonaws.com/kzg/g1.point --output-document=/data/g1.point
-	wget https://srs-mainnet.s3.amazonaws.com/kzg/g2.point.powerOf2 --output-document=/data/g2.point.powerOf2
-	wget https://raw.githubusercontent.com/Layr-Labs/eigenda-operator-setup/master/resources/srssha256sums.txt --output-document=/data/srssha256sums.txt
+  wget https://srs-mainnet.s3.amazonaws.com/kzg/g1.point --output-document=/data/g1.point
+  wget https://srs-mainnet.s3.amazonaws.com/kzg/g2.point.powerOf2 --output-document=/data/g2.point.powerOf2
+  wget https://raw.githubusercontent.com/Layr-Labs/eigenda-operator-setup/master/resources/srssha256sums.txt --output-document=/data/srssha256sums.txt
   if (cd data && sha256sum -c srssha256sums.txt); then
     echo "Checksums match. Verification successful."
     touch /data/verified
