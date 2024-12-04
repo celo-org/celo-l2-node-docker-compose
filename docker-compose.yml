@@ -35,10 +35,10 @@ services:
     stop_grace_period: 5m
     entrypoint: /scripts/start-op-geth.sh
     env_file:
-      - ./envs/${ENV_NAME}/op-geth.env
+      - ./envs/${NETWORK_NAME}/op-geth.env
       - .env
     volumes:
-      - ./envs/${ENV_NAME}/config:/chainconfig
+      - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
       - ${DATADIR_PATH}:/geth
@@ -57,10 +57,10 @@ services:
     stop_grace_period: 5m
     entrypoint: /scripts/start-op-node.sh
     env_file:
-      - ./envs/${ENV_NAME}/op-node.env
+      - ./envs/${NETWORK_NAME}/op-node.env
       - .env
     volumes:
-      - ./envs/${ENV_NAME}/config:/chainconfig
+      - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
     ports:
@@ -76,7 +76,7 @@ services:
       dockerfile: Dockerfile.bedrock-init
     entrypoint: /scripts/init-bedrock.sh
     env_file:
-      - ./envs/${ENV_NAME}/op-geth.env
+      - ./envs/${NETWORK_NAME}/op-geth.env
       - .env
     volumes:
       - ./scripts/:/scripts
