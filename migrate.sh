@@ -98,9 +98,9 @@ echo ""
 # Use git to check if the rollup.json or genesis.json files have changed, if so then something went wrong with the migration.
 # Note in the case that this is the first migration then the check will pass.
 if git diff --quiet "./envs/${network}/config/rollup.json" "./envs/${network}/config/genesis.json"; then
-    echo "\033[0;32mMigration successful\033[0m"
+    printf "\033[0;32mMigration successful\033[0m\n"
 else
-    echo "\033[0;31mMigration failed, output rollup.json and genesis.json do not match stored versions\033[0m"
+    printf "\033[0;31mMigration failed, output rollup.json and genesis.json do not match stored versions\033[0m\n"
     # Display the diff for the rollup.json and genesis.json files
     git diff "./envs/${network}/config/rollup.json" "./envs/${network}/config/genesis.json"
     exit 1
