@@ -2,16 +2,16 @@
 set -e
 
 if [ "$NETWORK_NAME" != "op-mainnet" ]; then
-  echo "Stopping l2geth for a non op-mainnet chain"
+  echo "Stopping historical-rpc-node for a non op-mainnet chain"
   exit
 fi
 
 if [ -n "${OP_GETH__HISTORICAL_RPC}" ]; then
-  echo "Stopping l2geth for using an external historical RPC"
+  echo "Stopping historical-rpc-node for using an external historical RPC"
   exit
 fi
 
-# Start l2geth.
+# Start historical-rpc-node.
 exec geth \
   --vmodule=eth/*=5,miner=4,rpc=5,rollup=4,consensus/clique=1 \
   --datadir=$DATADIR \
@@ -24,5 +24,5 @@ exec geth \
   --metrics \
   --metrics.influxdb \
   --metrics.influxdb.endpoint=http://influxdb:8086 \
-  --metrics.influxdb.database=l2geth \
+  --metrics.influxdb.database=historical-rpc-node \
   $@

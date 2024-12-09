@@ -2,12 +2,12 @@
 set -e
 
 if [ "$NETWORK_NAME" != "op-mainnet" ]; then
-  echo "Stopping l2geth for a non op-mainnet chain"
+  echo "Stopping historical-rpc-node for a non op-mainnet chain"
   exit
 fi
 
 if [ -n "${OP_GETH__HISTORICAL_RPC}" ]; then
-  echo "Stopping l2geth for using an external historical RPC"
+  echo "Stopping historical-rpc-node for using an external historical RPC"
   exit
 fi
 
