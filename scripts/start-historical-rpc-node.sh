@@ -1,26 +1,27 @@
 #!/bin/sh
 set -e
 
-if [ "$NETWORK_NAME" != "op-mainnet" ]; then
-  echo "Stopping historical-rpc-node for a non op-mainnet chain"
+if [ "$NETWORK_NAME" != "alfajores" ] && [ "$NETWORK_NAME" != "baklava" ] && [ "$NETWORK_NAME" != "mainnet" ]; then
+  echo "Not starting historical-rpc-node for a non migrated chain (${NETWORK_NAME})"
   exit
 fi
 
 if [ -n "${OP_GETH__HISTORICAL_RPC}" ]; then
-  echo "Stopping historical-rpc-node for using an external historical RPC"
+  echo "Not starting historical-rpc-node, using an external historical RPC (${OP_GETH__HISTORICAL_RPC})"
+  exit
+fi
+
+if [ -z "${HISTORICAL_RPC_DATADIR_PATH}" ]; then
+  echo "Not starting historical-rpc-node, neither HISTORICAL_RPC_DATADIR_PATH nor OP_GETH__HISTORICAL_RPC are set"
   exit
 fi
 
 # Start historical-rpc-node.
 exec geth \
-  --vmodule=eth/*=5,miner=4,rpc=5,rollup=4,consensus/clique=1 \
+  --$NETWORK_NAME \
   --datadir=$DATADIR \
-  --password=$DATADIR/password \
-  --allow-insecure-unlock \
-  --unlock=$BLOCK_SIGNER_ADDRESS \
-  --mine \
-  --miner.etherbase=$BLOCK_SIGNER_ADDRESS \
-  --gcmode=$NODE_TYPE \
+  --gcmode=archive \
+  --syncmode=full
   --metrics \
   --metrics.influxdb \
   --metrics.influxdb.endpoint=http://influxdb:8086 \
