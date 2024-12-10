@@ -12,7 +12,7 @@ if [ -n "${OP_GETH__HISTORICAL_RPC}" ]; then
 fi
 
 if [ -z "${HISTORICAL_RPC_DATADIR_PATH}" ]; then
-  echo "Not starting historical-rpc-node, neither HISTORICAL_RPC_DATADIR_PATH nor OP_GETH__HISTORICAL_RPC are set"
+  echo "Not starting historical-rpc-node since HISTORICAL_RPC_DATADIR_PATH is unset"
   exit
 fi
 
@@ -21,7 +21,7 @@ exec geth \
   --$NETWORK_NAME \
   --datadir=$DATADIR \
   --gcmode=archive \
-  --syncmode=full
+  --syncmode=full \
   --metrics \
   --metrics.influxdb \
   --metrics.influxdb.endpoint=http://influxdb:8086 \
