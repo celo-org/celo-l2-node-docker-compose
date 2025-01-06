@@ -298,3 +298,23 @@ Use the following login details to access the dashboard:
 Navigate over to `Dashboards > Manage > Simple Node Dashboard` to see the dashboard, see the following gif if you need help:
 
 ![metrics dashboard gif](https://user-images.githubusercontent.com/14298799/171476634-0cb84efd-adbf-4732-9c1d-d737915e1fa7.gif)
+
+# Appendix
+
+## L2 network assets
+
+These assets are fetched when requried by the scripts in this reqo and so
+should not need to be manually retrieved, however for completeness they are
+provided here.
+
+* Mainnet
+ * Pending launch
+* Alfajores
+  * [Full migrated chaindata](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
+  * [Rollup deploy config](https://storage.googleapis.com/cel2-rollup-files/alfajores/config.json)
+  * [L1 contract addresses](https://storage.googleapis.com/cel2-rollup-files/alfajores/deployment-l1.json)
+  * [L2 allocs](https://storage.googleapis.com/cel2-rollup-files/alfajores/l2-allocs.json)
+  * [rollup.json](https://storage.googleapis.com/cel2-rollup-files/alfajores/rollup.json)
+  * [Genesis](https://storage.googleapis.com/cel2-rollup-files/alfajores/genesis.json) used for snap syncing
+* Baklava
+ * Pending launch
