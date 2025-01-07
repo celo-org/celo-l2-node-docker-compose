@@ -309,7 +309,7 @@ provided here.
 
 * Mainnet
  * Pending launch
-* Alfajores
+* Alfajores - L2 fork block 26384000
   * [Full migrated chaindata](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
   * [Rollup deploy config](https://storage.googleapis.com/cel2-rollup-files/alfajores/config.json)
   * [L1 contract addresses](https://storage.googleapis.com/cel2-rollup-files/alfajores/deployment-l1.json)
