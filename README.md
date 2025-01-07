@@ -303,7 +303,7 @@ Navigate over to `Dashboards > Manage > Simple Node Dashboard` to see the dashbo
 
 ## L2 network assets
 
-These assets are fetched when requried by the scripts in this reqo and so
+These assets are fetched when required by the scripts in this repo and so
 should not need to be manually retrieved, however for completeness they are
 provided here.
 
