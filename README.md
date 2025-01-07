@@ -167,9 +167,9 @@ you can migrate the data in order to use it with the L2 node.
 
 Once an L2 hardfork date has been decided for a specific network the L1
 [blockchain client](https://github.com/celo-org/celo-blockchain) will be
-released with a hardcoded stop block. Nodes running this version will stop at
-the stop block, at which point the node can be stopped and the datadir can be
-migrated.
+released with a hardcoded stop block. Nodes running this version will stop
+producing blocks at the stop block, at which point the node can be shut down
+and the datadir can be migrated.
 
 Note that the migration does not modify the source datadir.
 
