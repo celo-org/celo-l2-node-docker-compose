@@ -496,39 +496,39 @@
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
-    "arrowGlacierBlock": 26967280,
-    "bedrockBlock": 26967280,
-    "berlinBlock": 26967280,
+    "arrowGlacierBlock": 28077000,
+    "bedrockBlock": 28077000,
+    "berlinBlock": 28077000,
     "byzantiumBlock": 0,
-    "cancunTime": 1733306095,
-    "canyonTime": 1733306095,
-    "cel2Time": 1733306095,
+    "cancunTime": 1738927174,
+    "canyonTime": 1738927174,
+    "cel2Time": 1738927174,
     "celo": {
       "eip1559BaseFeeFloor": 25000000000
     },
     "chainId": 62320,
     "constantinopleBlock": 0,
     "daoForkSupport": true,
-    "ecotoneTime": 1733306095,
+    "ecotoneTime": 1738927174,
     "eip150Block": 0,
     "eip155Block": 0,
     "eip158Block": 0,
-    "fjordTime": 1733306095,
+    "fjordTime": 1738927174,
     "gingerbreadBlock": 18785000,
-    "graniteTime": 1733306095,
-    "grayGlacierBlock": 26967280,
+    "graniteTime": 1738927174,
+    "grayGlacierBlock": 28077000,
     "homesteadBlock": 0,
     "istanbulBlock": 0,
-    "londonBlock": 26967280,
-    "mergeNetsplitBlock": 26967280,
+    "londonBlock": 28077000,
+    "mergeNetsplitBlock": 28077000,
     "optimism": {
       "eip1559Denominator": 400,
       "eip1559DenominatorCanyon": 400,
       "eip1559Elasticity": 5
     },
     "petersburgBlock": 0,
-    "regolithTime": 1733306095,
-    "shanghaiTime": 1733306095,
+    "regolithTime": 1738927174,
+    "shanghaiTime": 1738927174,
     "terminalTotalDifficulty": 0,
     "terminalTotalDifficultyPassed": true
   },
@@ -538,4 +538,3 @@
   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
   "timestamp": "0x5b843511"
 }
-
