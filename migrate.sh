@@ -46,6 +46,8 @@ echo "" # Blank line to separate from any failure output
 source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve source directory path"; exit 1; }
 destination_dir=$(readlink -f "$destination_dir") || { echo "Error: Failed to resolve destination directory path"; exit 1; }
 
+#TODO(Alec) fix tag for cel2-migration-tool
+
 # Run check-db continuity script to ensure source db has no data gaps
 if docker run --platform=linux/amd64 -it --rm \
     -v "${source_dir}/celo/chaindata:/old-db" \
