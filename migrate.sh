@@ -47,12 +47,15 @@ source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve sour
 destination_dir=$(readlink -f "$destination_dir") || { echo "Error: Failed to resolve destination directory path"; exit 1; }
 
 #TODO(Alec) fix tag for cel2-migration-tool
-cel2_migration_tool_tag="5682b80ec60c47f582c6af8aa085ae6f9048d801"
+cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/dev-images/cel2-migration-tool"
+#cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool"
+cel2_migration_tool_tag="5bde0aeb2ec9afa96c991c78775766e5981dc796"
+#cel2_migration_tool_tag="5682b80ec60c47f582c6af8aa085ae6f9048d801"
 
 # Run check-db continuity script to ensure source db has no data gaps
 if docker run --platform=linux/amd64 -it --rm \
-    -v "${source_dir}/celo/chaindata:/old-db" \
-    "us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:${cel2_migration_tool_tag}" \
+    -v "${source_dir}:/old-db" \
+    "${cel2_migration_tool_image}:${cel2_migration_tool_tag}" \
     check-db \
       --db-path /old-db \
       --fail-fast; then
@@ -69,7 +72,7 @@ if [ "${operation}" = "pre" ]; then
   docker run --platform=linux/amd64 -it --rm \
     -v "${source_dir}/celo/chaindata:/old-db" \
     -v "${destination_dir}/geth/chaindata:/new-db" \
-    "us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:${cel2_migration_tool_tag}" \
+    "${cel2_migration_tool_image}:${cel2_migration_tool_tag}" \
     "${operation}" \
       --old-db /old-db \
       --new-db /new-db
@@ -101,7 +104,7 @@ docker run --platform=linux/amd64 -it --rm \
   -v "${destination_dir}/geth/chaindata:/new-db" \
   -v "${migration_config_dir}:/migration-config" \
   -v "./envs/${network}/config:/out-config" \
-  "us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:${cel2_migration_tool_tag}" \
+  "${cel2_migration_tool_image}:${cel2_migration_tool_tag}" \
   "${operation}" \
     --old-db /old-db \
     --new-db /new-db \
