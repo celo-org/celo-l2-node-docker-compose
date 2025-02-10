@@ -43,8 +43,21 @@ echo "Destination Directory: $destination_dir"
 echo "" # Blank line to separate from any failure output
 
 # Convert source and destination directories to absolute paths
-source_dir=$(readlink -f "$source_dir")
-destination_dir=$(readlink -f "$destination_dir")
+source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve source directory path"; exit 1; }
+destination_dir=$(readlink -f "$destination_dir") || { echo "Error: Failed to resolve destination directory path"; exit 1; }
+
+# Run check-db continuity script to ensure source db has no data gaps
+if docker run --platform=linux/amd64 -it --rm \
+    -v "${source_dir}/celo/chaindata:/old-db" \
+    us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:5682b80ec60c47f582c6af8aa085ae6f9048d801 \
+    check-db \
+      --db-path /old-db \
+      --fail-fast; then
+    printf "\033[0;32mDB check completed successfully.\033[0m\n"
+else
+    printf "\033[0;31mDB check failed with exit code $?. The source db is missing data. Please retry with another source db, and visit https://docs.celo.org/cel2/operators/migrate-node for instructions on how to check for missing data.\033[0m\n"
+    exit $?
+fi
 
 # Ensure destination directory exists for chaindata
 mkdir -p  "${destination_dir}/geth"
