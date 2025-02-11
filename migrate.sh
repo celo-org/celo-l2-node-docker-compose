@@ -68,9 +68,9 @@ if docker run --platform=linux/amd64 -it --rm \
     check-db \
       --db-path /old-db \
       --fail-fast; then
-    printf "\033[0;32mDB check completed successfully.\033[0m\n"
+    printf "\033[0;32mDB check completed successfully. No gaps / missing data detected.\033[0m\n"
 else
-    printf "\033[0;31mDB check failed with exit code $?. The source db is missing data. Please retry with another source db, and visit https://docs.celo.org/cel2/operators/migrate-node for instructions on how to check for missing data.\033[0m\n"
+    printf "\033[0;31mDB check failed with exit code $?. If the logs indicate that the db is missing data, please retry with another source db. You can visit https://docs.celo.org/cel2/operators/migrate-node for instructions on how to check whether a db has missing data.\033[0m\n"
     exit $?
 fi
 
