@@ -63,7 +63,7 @@ cel2_migration_tool_tag="5bde0aeb2ec9afa96c991c78775766e5981dc796"
 
 # Run check-db continuity script to ensure source db has no data gaps
 if docker run --platform=linux/amd64 -it --rm \
-    -v "${source_dir}:/old-db" \
+    -v "${source_dir}/celo/chaindata:/old-db" \
     "${cel2_migration_tool_image}:${cel2_migration_tool_tag}" \
     check-db \
       --db-path /old-db \
