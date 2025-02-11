@@ -55,11 +55,8 @@ if ! is_absolute_path "$source_dir"; then
     source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve source directory path, directory may not exist"; exit 1; }
 fi
 
-#TODO(Alec) fix tag for cel2-migration-tool
-cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/dev-images/cel2-migration-tool"
-#cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool"
-cel2_migration_tool_tag="5bde0aeb2ec9afa96c991c78775766e5981dc796"
-#cel2_migration_tool_tag="5682b80ec60c47f582c6af8aa085ae6f9048d801"
+cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool"
+cel2_migration_tool_tag="5682b80ec60c47f582c6af8aa085ae6f9048d801"
 
 # Run check-db continuity script to ensure source db has no data gaps
 if docker run --platform=linux/amd64 -it --rm \
