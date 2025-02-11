@@ -42,9 +42,18 @@ echo "Source Directory: $source_dir"
 echo "Destination Directory: $destination_dir"
 echo "" # Blank line to separate from any failure output
 
-# Convert source and destination directories to absolute paths
-source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve source directory path"; exit 1; }
-destination_dir=$(readlink -f "$destination_dir") || { echo "Error: Failed to resolve destination directory path"; exit 1; }
+is_absolute_path() {
+    case "$1" in
+        /*) return 0 ;;  # Absolute path
+        ~/*) return 0 ;; # Absolute path with home directory
+        *) return 1 ;;   # Relative path
+    esac
+}
+
+# Convert source and destination directory to absolute path if relative
+if ! is_absolute_path "$source_dir"; then
+    source_dir=$(readlink -f "$source_dir") || { echo "Error: Failed to resolve source directory path, directory may not exist"; exit 1; }
+fi
 
 #TODO(Alec) fix tag for cel2-migration-tool
 cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/dev-images/cel2-migration-tool"
@@ -67,6 +76,11 @@ fi
 
 # Ensure destination directory exists for chaindata
 mkdir -p  "${destination_dir}/geth"
+
+# Convert destination directory to absolute path if relative
+if ! is_absolute_path "$destination_dir"; then
+    destination_dir=$(readlink -f "$destination_dir") || { echo "Error: Failed to resolve destination directory path"; exit 1; }
+fi
 
 if [ "${operation}" = "pre" ]; then
   docker run --platform=linux/amd64 -it --rm \
