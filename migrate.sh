@@ -75,7 +75,7 @@ else
 fi
 
 # Ensure destination directory exists for chaindata
-mkdir -p  "${destination_dir}/geth"
+mkdir -p  "${destination_dir}/geth/chaindata"
 
 # Convert destination directory to absolute path if relative
 if ! is_absolute_path "$destination_dir"; then
