@@ -43,7 +43,7 @@ echo "Destination Directory: $destination_dir"
 echo "" # Blank line to separate from any failure output
 
 # Check if source directory exists
-if ![ -d "${source_dir}" ]; then
+if [ ! -d "${source_dir}" ]; then
     printf "\033[0;31mError: Source directory does not exist\033[0m\n"
     exit 1
 fi
