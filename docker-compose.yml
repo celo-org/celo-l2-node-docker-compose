@@ -69,7 +69,7 @@ services:
 
   op-node:
     platform: linux/amd64
-    image: us-west1-docker.pkg.dev/blockchaintestsglobaltestnet/dev-images/op-node:ef8f378031b02bd2cda7fa053aff9c4269454bda
+    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-node:celo-v2.0.0-rc4
     restart: unless-stopped
     stop_grace_period: 5m
     entrypoint: /scripts/start-op-node.sh
