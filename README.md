@@ -40,12 +40,12 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update
-
+ 
 ### Install docker and docker compose on Ubuntu
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 sudo usermod -aG docker $(whoami)
-
+ 
 ### Verify the Docker and docker compose install on Ubuntu
 sudo docker run hello-world
 ```
@@ -86,7 +86,6 @@ E.g. to run a node on Alfajores:
 ```sh
 cp alfajores.env .env
 ```
-
 The `.env` file is ready to use and is configured for snap sync and non-archive mode. If you would like to customise
 your node further see below.
 
@@ -95,61 +94,61 @@ your node further see below.
 There are some choices that significantly affect how nodes need to be run. The
 requirements for each are given below.
 
-- Snap sync node:
-  - No extra requirements, simply use the provided config.
-- Full sync node:
-  - A datadir migrated from an L1 node (this does not need to be an archive datadir)
-  - Full sync configured
-  - Example config adjustments:
-    - ```
-      OP_GETH__SYNCMODE=full
-      DATADIR_PATH=<path to your migrated datadir>
-      ```
-- Historical archive access (historical execution and state access, e.g.
+* Snap sync node:
+  * No extra requirements, simply use the provided config.
+* Full sync node:
+   * A datadir migrated from an L1 node (this does not need to be an archive datadir)
+   * Full sync configured
+   * Example config adjustments:
+     * ```
+       OP_GETH__SYNCMODE=full
+       DATADIR_PATH=<path to your migrated datadir>
+       ```
+* Historical archive access (historical execution and state access, e.g.
   `eth_call`, `eth_getBalance` ... etc for pre-L2 blocks)
-  - Requires access to an L1 archive node, this can be achieved in one of 3 ways:
-    - An existing L1 archive node datadir can be configured and an L1 node
-      will be launched using that datadir
-    - An empty datadir can be configured and an L1 archive node will be launched
-      and sync using that datadir. Note that it will be some time till the L1
-      node will be able to serve state queries
-    - An L1 archive node URL can be configured
-  - Example config adjustments:
-    - ```
-      HISTORICAL_RPC_DATADIR_PATH=<path to datadir> or OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
-      ```
-- Full archive node with all states from genesis stored:
-  - A datadir migrated from an L1 node (this does not need to be an archive datadir)
-  - Full sync configured
-  - Historical archive access configured (see above)
-  - Example config adjustments:
-    - ```
-      OP_GETH__SYNCMODE=full
-      DATADIR_PATH=<path to your migrated datadir>
-      HISTORICAL_RPC_DATADIR_PATH=<path to datadir> or OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
-      ```
+   * Requires access to an L1 archive node, this can be achieved in one of 3 ways:
+     * An existing L1 archive node datadir can be configured and an L1 node
+       will be launched using that datadir
+     * An empty datadir can be configured and an L1 archive node will be launched
+       and sync using that datadir. Note that it will be some time till the L1
+       node will be able to serve state queries
+     * An L1 archive node URL can be configured
+   * Example config adjustments:
+     * ```
+       HISTORICAL_RPC_DATADIR_PATH=<path to datadir> or OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
+       ```
+* Full archive node with all states from genesis stored:
+   * A datadir migrated from an L1 node (this does not need to be an archive datadir)
+   * Full sync configured
+   * Historical archive access configured (see above)
+   * Example config adjustments:
+     * ```
+       OP_GETH__SYNCMODE=full
+       DATADIR_PATH=<path to your migrated datadir>
+       HISTORICAL_RPC_DATADIR_PATH=<path to datadir> or OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
+       ```
 
 See [Obtaining a migrated L1 datadir](#obtaining-a-migrated-l1-datadir) for
 instructions on obtaining a migrated L1 datadir.
 
 ### Optional configurations
 
-- **NODE_TYPE** - Choose the type of node you want to run:
-  - `full` (Full node) - A Full node contains a few recent blocks without historical states.
-  - `archive` (Archive node) - An Archive node stores the complete history of the blockchain, including historical states.
-- **OP_NODE\_\_RPC_ENDPOINT** - Specify the endpoint for the RPC of Layer 1 (e.g., Ethereum mainnet). For instance, you can use the free plan of Alchemy for the Ethereum mainnet.
-- **OP_NODE\_\_L1_BEACON** - Specify the beacon endpoint of Layer 1. You can use [QuickNode for the beacon endpoint](https://www.quicknode.com). For example: https://xxx-xxx-xxx.quiknode.pro/db55a3908ba7e4e5756319ffd71ec270b09a7dce
-- **OP_NODE\_\_RPC_TYPE** - Specify the service provider for the RPC endpoint you've chosen in the previous step. The available options are:
-  - `alchemy` - Alchemy
-  - `quicknode` - Quicknode (ETH only)
-  - `erigon` - Erigon
-  - `basic` - Other providers
-- **HEALTHCHECK\_\_REFERENCE_RPC_PROVIDER** - Specify the public RPC endpoint for Layer 2 network you want to operate on for healthchecking.
-- **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for historical RPC node to serve pre-L2 historical state.
-- **OP_GETH\_\_HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state, if set overrides the **HISTORICAL_RPC_DATADIR_PATH** setting.
-  - Leave blank if you want to self-host pre-bedrock historical node for high-throughput use cases such as subgraph indexing.
-- **IMAGE_TAG\_\_[...]** - Use custom docker image for specified components.
-- **PORT\_\_[...]** - Use custom port for specified components.
+* **NODE_TYPE** - Choose the type of node you want to run:
+    * `full` (Full node) - A Full node contains a few recent blocks without historical states.
+    * `archive` (Archive node) - An Archive node stores the complete history of the blockchain, including historical states.
+* **OP_NODE__RPC_ENDPOINT** - Specify the endpoint for the RPC of Layer 1 (e.g., Ethereum mainnet). For instance, you can use the free plan of Alchemy for the Ethereum mainnet.
+* **OP_NODE__L1_BEACON** - Specify the beacon endpoint of Layer 1. You can use [QuickNode for the beacon endpoint](https://www.quicknode.com). For example: https://xxx-xxx-xxx.quiknode.pro/db55a3908ba7e4e5756319ffd71ec270b09a7dce
+* **OP_NODE__RPC_TYPE** - Specify the service provider for the RPC endpoint you've chosen in the previous step. The available options are:
+    * `alchemy` - Alchemy
+    * `quicknode` - Quicknode (ETH only)
+    * `erigon` - Erigon
+    * `basic` - Other providers
+* **HEALTHCHECK__REFERENCE_RPC_PROVIDER** - Specify the public RPC endpoint for Layer 2 network you want to operate on for healthchecking.
+* **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for historical RPC node to serve pre-L2 historical state.
+* **OP_GETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state, if set overrides the **HISTORICAL_RPC_DATADIR_PATH** setting.
+    * Leave blank if you want to self-host pre-bedrock historical node for high-throughput use cases such as subgraph indexing.
+* **IMAGE_TAG__[...]** - Use custom docker image for specified components.
+* **PORT__[...]** - Use custom port for specified components.
 
 ## Obtaining a migrated L1 datadir
 
@@ -161,9 +160,9 @@ one by following one of the options outlined below.
 If you do not have an existing L1 datadir but wish to full sync and/or run an
 archive node you can download a migrated datadir hosted by cLabs from one of the links below.
 
-- [Alfajores migrated datadir](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
-- Baklava migrated datadir - pending network launch
-- Mainnet migrated datadir - pending network launch
+* [Alfajores migrated datadir](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
+* Baklava migrated datadir - pending network launch
+* Mainnet migrated datadir - pending network launch
 
 ### 2. Migrate your own datadir
 
@@ -230,10 +229,9 @@ docker compose logs <CONTAINER_NAME> -f --tail 10
 ```
 
 To view logs for a specific container. Most commonly used `<CONTAINER_NAME>` are:
-
-- op-geth
-- op-node
-- bedrock-init
+* op-geth
+* op-node
+* bedrock-init
 
 ### Stop
 
@@ -327,14 +325,14 @@ These assets are fetched when required by the scripts in this repo and so
 should not need to be manually retrieved, however for completeness they are
 provided here.
 
-- Mainnet
-- Pending launch
-- Alfajores - L2 fork block 26384000
-  - [Full migrated chaindata](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
-  - [Rollup deploy config](https://storage.googleapis.com/cel2-rollup-files/alfajores/config.json)
-  - [L1 contract addresses](https://storage.googleapis.com/cel2-rollup-files/alfajores/deployment-l1.json)
-  - [L2 allocs](https://storage.googleapis.com/cel2-rollup-files/alfajores/l2-allocs.json)
-  - [rollup.json](https://storage.googleapis.com/cel2-rollup-files/alfajores/rollup.json)
-  - [Genesis](https://storage.googleapis.com/cel2-rollup-files/alfajores/genesis.json) used for snap syncing
-- Baklava
-- Pending launch
+* Mainnet
+ * Pending launch
+* Alfajores - L2 fork block 26384000
+  * [Full migrated chaindata](https://storage.googleapis.com/cel2-rollup-files/alfajores/alfajores-migrated-datadir.tar.zst)
+  * [Rollup deploy config](https://storage.googleapis.com/cel2-rollup-files/alfajores/config.json)
+  * [L1 contract addresses](https://storage.googleapis.com/cel2-rollup-files/alfajores/deployment-l1.json)
+  * [L2 allocs](https://storage.googleapis.com/cel2-rollup-files/alfajores/l2-allocs.json)
+  * [rollup.json](https://storage.googleapis.com/cel2-rollup-files/alfajores/rollup.json)
+  * [Genesis](https://storage.googleapis.com/cel2-rollup-files/alfajores/genesis.json) used for snap syncing
+* Baklava
+ * Pending launch
