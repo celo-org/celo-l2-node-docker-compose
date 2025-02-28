@@ -92,7 +92,7 @@ services:
   prometheus:
     platform: linux/amd64
     image: prom/prometheus:${IMAGE_TAG__PROMETHEUS:-latest}
-    restart: ${PROMETHEUS_RESTART_POLICY:-no}
+    restart: on-failure
     entrypoint: /scripts/start-prometheus.sh
     env_file:
       - .env
@@ -106,7 +106,7 @@ services:
   grafana:
     platform: linux/amd64
     image: grafana/grafana:${IMAGE_TAG__GRAFANA:-9.3.0}
-    restart: ${GRAFANA_RESTART_POLICY:-no}
+    restart: on-failure
     entrypoint: /scripts/start-grafana.sh
     env_file:
       - ./envs/common/grafana.env
