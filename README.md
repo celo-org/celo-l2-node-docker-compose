@@ -297,6 +297,8 @@ Hours until sync completed: ...
 Grafana is exposed at [http://localhost:3000](http://localhost:3000) and comes with one pre-loaded dashboard ("Simple Node Dashboard").
 Simple Node Dashboard includes basic node information and will tell you if your node ever falls out of sync with the reference L2 node or if a state root fault is detected.
 
+By default, Grafana and Prometheus do not start (`MONITORING_ENABLED=false`). If you want to launch Grafana and Prometheus, set `MONITORING_ENABLED=true` in your environment file. You can also control the containers’ restart policies using `GRAFANA_RESTART_POLICY`/`PROMETHEUS_RESTART_POLICY` (e.g.  `unless-stopped`, `no`, `always`, or `on-failure`).
+
 Use the following login details to access the dashboard:
 
 - Username: `admin`
