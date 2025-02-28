@@ -17,10 +17,13 @@ services:
   healthcheck:
     platform: linux/amd64
     image: ethereumoptimism/replica-healthcheck:${IMAGE_TAG__HEALTHCHECK:-latest}
-    restart: unless-stopped
+    restart: on-failure
+    entrypoint: /opt/optimism/packages/replica-healthcheck/start-healthcheck.sh
     env_file:
       - ./envs/common/healthcheck.env
       - .env
+    volumes:
+      - ./scripts/start-healthcheck.sh:/opt/optimism/packages/replica-healthcheck/start-healthcheck.sh
     ports:
       - ${PORT__HEALTHCHECK_METRICS:-7300}:7300
 
@@ -121,12 +124,15 @@ services:
   influxdb:
     platform: linux/amd64
     image: influxdb:${IMAGE_TAG__INFLUXDB:-1.8}
-    restart: unless-stopped
+    restart: on-failure
+    entrypoint: /scripts/start-influxdb.sh
     env_file:
       - ./envs/common/influxdb.env
+      - .env
     volumes:
       - ./docker/influxdb/influx_init.iql:/docker-entrypoint-initdb.d/influx_init.iql
       - influxdb_data:/var/lib/influxdb
+      - ./scripts/start-influxdb.sh:/scripts/start-influxdb.sh
     ports:
       - ${PORT__INFLUXDB:-8086}:8086
 
