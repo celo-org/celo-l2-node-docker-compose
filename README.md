@@ -4,18 +4,6 @@ A simple docker compose script for migrating Celo L1 data and launching Celo L2 
 
 > ⚠️ The instructions in this README are are for illustrative purposes only. Please refer to the [Celo Docs](https://docs.celo.org/cel2/notices/l2-migration) for the most up to date information on participating in the L2 hardfork.
 
-## Recommended Hardware
-
-### Testnets (Alfajores and Baklava)
-
-- 16GB+ RAM
-- 500 GB SSD (NVME Recommended)
-- 100mb/s+ Download
-
-### Mainnet
-
-- TBD
-
 ## Installation and Configuration
 
 ### Install docker and docker compose
