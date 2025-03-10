@@ -113,6 +113,7 @@ services:
     entrypoint: /scripts/start-grafana.sh
     env_file:
       - ./envs/common/grafana.env
+      - .env
     volumes:
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
       - ./docker/grafana/dashboards/simple_node_dashboard.json:/var/lib/grafana/dashboards/simple_node_dashboard.json
