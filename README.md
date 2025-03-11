@@ -28,7 +28,7 @@ sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
 ### Add Docker and docker compose support to the Ubuntu's packages list
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 sudo apt-get update
  
@@ -84,7 +84,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 
     Requires a migrated pre-hardfork full node datadir (you should not run the migration on an archive datadir).
 
-      ```md
+      ```text
       OP_GETH__SYNCMODE=full
       DATADIR_PATH=<path to your migrated pre-hardfork full node datadir>
       ```
@@ -99,7 +99,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 
       1. Run your L2 node in archive mode with full sync, and provide the path to an existing pre-hardfork archive datadir. The docker-compose script will then automatically start a legacy archive node with that datadir and connect it to your L2 node.
 
-          ```md
+          ```text
           NODE_TYPE=archive
           OP_GETH__SYNCMODE=full
           DATADIR_PATH=<path to a migrated L1 full node datadir>
@@ -108,7 +108,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 
       2. Run your L2 node in archive mode with full sync, and do not provide a path to an existing pre-hardfork archive datadir. The docker-compose script will automatically start a legacy archive node which will begin syncing from the Celo genesis block. Note that syncing the legacy archive node will take some time, during which pre-hardfork archive access will not be available.
 
-          ```md
+          ```text
           NODE_TYPE=archive
           OP_GETH__SYNCMODE=full
           DATADIR_PATH=<path to a migrated L1 full node datadir>
@@ -117,7 +117,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 
       3. Run your L2 node in archive mode with full sync, and provide the RPC url of a running legacy archive node. This will override any value set for `HISTORICAL_RPC_DATADIR_PATH` and a legacy archive node will not be launched when you start your L2 node.
 
-          ```md
+          ```text
           NODE_TYPE=archive
           OP_GETH__SYNCMODE=full
           DATADIR_PATH=<path to a migrated L1 full node datadir>
@@ -126,7 +126,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 
     Note that in all of these configurations we set
 
-      ```md
+      ```text
       NODE_TYPE=archive
       OP_GETH__SYNCMODE=full
       ```
