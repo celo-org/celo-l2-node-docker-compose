@@ -89,7 +89,12 @@ if ! test -e "${network}.env"; then
 fi
 . "./${network}.env"
 
-# Get MIGRATION_BLOCK_NUMBER and MIGRATION_BLOCK_TIME.
+# For mainnet we set the L1_BEACON_RPC_FLAG to be able to dynamically find the l1 starting block tag
+if [ "$network" = "mainnet" ]; then
+	L1_BEACON_RPC_FLAG="l1-beacon-rpc=$OP_NODE__L1_BEACON"
+fi
+
+# Get MIGRATION_BLOCK_NUMBER.
 . "./envs/${network}/migration-config/migration.env"
 
 # Gather required migration files
@@ -117,8 +122,7 @@ docker run --platform=linux/amd64 -it --rm \
     --l1-rpc "${OP_NODE__RPC_ENDPOINT}" \
     --outfile.rollup-config /out-config/rollup.json \
     --outfile.genesis /out-config/genesis.json \
-    --migration-block-time="$MIGRATION_BLOCK_TIME" \
-    --migration-block-number="$MIGRATION_BLOCK_NUMBER"
+    --migration-block-number="$MIGRATION_BLOCK_NUMBER" $L1_BEACON_RPC_FLAG
 
 # Put a blank line before the summary
 echo ""
