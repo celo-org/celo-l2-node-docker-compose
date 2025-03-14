@@ -102,9 +102,9 @@ migration_config_dir="./envs/${network}/migration-config"
 mkdir -p "$migration_config_dir"
 if ! (
   cd "$migration_config_dir"
-  wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/config.json"
-  wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/deployment-l1.json"
-  wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/l2-allocs.json"
+  wget -O config.json "https://storage.googleapis.com/cel2-rollup-files/${network}/config.json"
+  wget -O deployment-l1.json "https://storage.googleapis.com/cel2-rollup-files/${network}/deployment-l1.json"
+  wget -O l2-allocs.json "http://storage.googleapis.com/cel2-rollup-files/${network}/l2-allocs.json"
 ); then
   echo "Failed to download migration config: one or more downloads failed. You may need to wait until the migration config has been published."
   exit 1
