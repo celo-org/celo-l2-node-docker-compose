@@ -106,7 +106,7 @@ if ! (
   wget -O deployment-l1.json "https://storage.googleapis.com/cel2-rollup-files/${network}/deployment-l1.json"
   wget -O l2-allocs.json "http://storage.googleapis.com/cel2-rollup-files/${network}/l2-allocs.json"
 ); then
-  echo "Failed to download migration config: one or more downloads failed. You may need to wait until the migration config has been published."
+  printf "\033[0;31mFailed to download migration config: one or more downloads failed. You may need to wait until the migration config has been published.\033[0m\n"
   exit 1
 fi
 
