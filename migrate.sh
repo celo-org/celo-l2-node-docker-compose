@@ -50,7 +50,7 @@ fi
 
 # Convert source directory to absolute path
 source_dir=$(readlink -f "$source_dir")
-cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:celo-v2.0.0"
+cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:celo-migrate-v2.0.0-rc5"
 
 # Run check-db continuity script to ensure source db has no data gaps
 if docker run --platform=linux/amd64 -it --rm \
@@ -126,7 +126,7 @@ docker run --platform=linux/amd64 -it --rm \
     --l1-rpc "${OP_NODE__RPC_ENDPOINT}" \
     --outfile.rollup-config /out-config/rollup.json \
     --outfile.genesis /out-config/genesis.json \
-    --migration-block-number="$MIGRATION_BLOCK_NUMBER" $L1_BEACON_RPC_FLAG
+    --migration-block-number="$MIGRATION_BLOCK_NUMBER" "$L1_BEACON_RPC_FLAG"
 
 # Put a blank line before the summary
 echo ""
