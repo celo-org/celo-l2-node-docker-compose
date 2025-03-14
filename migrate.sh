@@ -126,7 +126,7 @@ docker run --platform=linux/amd64 -it --rm \
     --l1-rpc "${OP_NODE__RPC_ENDPOINT}" \
     --outfile.rollup-config /out-config/rollup.json \
     --outfile.genesis /out-config/genesis.json \
-    --migration-block-number="$MIGRATION_BLOCK_NUMBER" $L1_BEACON_RPC_FLAG
+    --migration-block-number="$MIGRATION_BLOCK_NUMBER" "$L1_BEACON_RPC_FLAG"
 
 # Put a blank line before the summary
 echo ""
