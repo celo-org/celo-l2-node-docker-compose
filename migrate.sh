@@ -100,12 +100,16 @@ fi
 # Gather required migration files
 migration_config_dir="./envs/${network}/migration-config"
 mkdir -p "$migration_config_dir"
-(
+if ! (
   cd "$migration_config_dir"
   wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/config.json"
   wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/deployment-l1.json"
   wget -N "https://storage.googleapis.com/cel2-rollup-files/${network}/l2-allocs.json"
-)
+); then
+  echo "Failed to download migration config: one or more downloads failed. You may need to wait until the migration config has been published."
+  exit 1
+fi
+
 
 docker run --platform=linux/amd64 -it --rm \
   -v "${source_dir}/celo/chaindata:/old-db" \
