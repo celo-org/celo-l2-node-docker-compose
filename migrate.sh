@@ -52,19 +52,6 @@ fi
 source_dir=$(readlink -f "$source_dir")
 cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:celo-v2.0.0"
 
-# Run check-db continuity script to ensure source db has no data gaps
-if docker run --platform=linux/amd64 -it --rm \
-    -v "${source_dir}/celo/chaindata:/old-db" \
-    "${cel2_migration_tool_image}" \
-    check-db \
-      --db-path /old-db \
-      --fail-fast; then
-    printf "\033[0;32mDB check completed successfully. No gaps or missing data detected.\033[0m\n"
-else
-    printf "\033[0;31mDB check failed with exit code $?. If the logs indicate that the db is missing data, please retry with another source db. You can visit https://docs.celo.org/cel2/operators/migrate-node for instructions on how to check whether a db has missing data.\033[0m\n"
-    exit $?
-fi
-
 # Ensure destination directory exists for chaindata
 mkdir -p  "${destination_dir}/geth/chaindata"
 
