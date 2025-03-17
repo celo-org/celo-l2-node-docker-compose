@@ -59,7 +59,7 @@ mkdir -p  "${destination_dir}/geth/chaindata"
 destination_dir=$(readlink -f "$destination_dir")
 
 if [ "${operation}" = "pre" ]; then
-  docker run --platform=linux/amd64 -it --rm \
+  docker run -it --rm \
     -v "${source_dir}/celo/chaindata:/old-db" \
     -v "${destination_dir}/geth/chaindata:/new-db" \
     "${cel2_migration_tool_image}" \
@@ -98,7 +98,7 @@ if ! (
 fi
 
 
-docker run --platform=linux/amd64 -it --rm \
+docker run -it --rm \
   -v "${source_dir}/celo/chaindata:/old-db" \
   -v "${destination_dir}/geth/chaindata:/new-db" \
   -v "${migration_config_dir}:/migration-config" \
