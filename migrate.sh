@@ -50,7 +50,7 @@ fi
 
 # Convert source directory to absolute path
 source_dir=$(readlink -f "$source_dir")
-cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:celo-v2.0.0"
+cel2_migration_tool_image="us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/cel2-migration-tool:celo-migrate-v2.0.1"
 
 # Ensure destination directory exists for chaindata
 mkdir -p  "${destination_dir}/geth/chaindata"
