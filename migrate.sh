@@ -88,10 +88,14 @@ fi
 migration_config_dir="./envs/${network}/migration-config"
 mkdir -p "$migration_config_dir"
 if ! (
+  networkid=${network}
+  if [ ${network} = "mainnet" ]; then
+	  networkid="celo"
+  fi
   cd "$migration_config_dir"
-  wget -O config.json "https://storage.googleapis.com/cel2-rollup-files/${network}/config.json"
-  wget -O deployment-l1.json "https://storage.googleapis.com/cel2-rollup-files/${network}/deployment-l1.json"
-  wget -O l2-allocs.json "http://storage.googleapis.com/cel2-rollup-files/${network}/l2-allocs.json"
+  wget -O config.json "https://storage.googleapis.com/cel2-rollup-files/${networkid}/config.json"
+  wget -O deployment-l1.json "https://storage.googleapis.com/cel2-rollup-files/${networkid}/deployment-l1.json"
+  wget -O l2-allocs.json "http://storage.googleapis.com/cel2-rollup-files/${networkid}/l2-allocs.json"
 ); then
   printf "\033[0;31mFailed to download migration config: one or more downloads failed. You may need to wait until the migration config has been published.\033[0m\n"
   exit 1
