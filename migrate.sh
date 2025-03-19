@@ -78,7 +78,7 @@ fi
 
 # For mainnet we set the L1_BEACON_RPC_FLAG to be able to dynamically find the l1 starting block tag
 if [ "$network" = "mainnet" ]; then
-	L1_BEACON_RPC_FLAG="l1-beacon-rpc=$OP_NODE__L1_BEACON"
+	L1_BEACON_RPC_FLAG="--l1-beacon-rpc=$OP_NODE__L1_BEACON"
 fi
 
 # Get MIGRATION_BLOCK_NUMBER.
