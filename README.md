@@ -158,7 +158,7 @@ We recommend one of the 3 following configurations for your L2 node. For more de
 ### P2P networking environment variables
 
 > ⚠️ If the following options are not configured correctly, your node will not
-> be discoverable or reachable to other nodes on the network, which is likely
+> be discoverable or reachable to other nodes on the network. This is likely
 > to impair your node's ability to stay reliably connected to and synced with
 > the network.
 
