@@ -39,6 +39,6 @@ exec ./eigenda-proxy --addr=0.0.0.0 \
   --eigenda.v2.max-blob-length="16MiB" \
   --eigenda.v2.cert-verifier-addr="$EIGENDA_V2_LOCAL_CERT_VERIFIER_ADD" \
   --eigenda.v2.signer-payment-key-hex="$EIGENDA_V2_LOCAL_SIGNER_PRIVATE_KEY_HEX" \
-  --eigenda.v2.svc-manager-addr="$EIGENDA_V2_LOCAL_SVC_MANAGER_ADDR" \
+  --eigenda.v2.service-manager-addr="$EIGENDA_V2_LOCAL_SVC_MANAGER_ADDR" \
   --eigenda.v2.bls-operator-state-retriever-addr="$EIGENDA_V2_LOCAL_BLS_OPERATOR_STATE_RETRIEVER_ADDR" \
   $EXTENDED_EIGENDA_PARAMETERS
