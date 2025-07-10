@@ -37,4 +37,5 @@ exec op-node \
   --syncmode=execution-layer \
   --p2p.priv.path=/shared/op-node_p2p_priv.txt \
   --p2p.peerstore.path=/shared/opnode_peerstore_db \
+  --altda.da-server=$OP_NODE_ALTDA_DA_SERVER \
   $EXTENDED_ARG $@
