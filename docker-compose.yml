@@ -88,6 +88,28 @@ services:
       op-geth:
         condition: service_started
 
+  challenger:
+    platform: linux/amd64
+    image: us-west1-docker.pkg.dev/blockchaintestsglobaltestnet/dev-images/op-succinct/challenger
+    restart: unless-stopped
+    stop_grace_period: 5m
+    entrypoint: /scripts/start-challenger.sh
+    env_file:
+      - .env.challenger
+    volumes:
+      - ./scripts/:/scripts
+    environment:
+      - MALICIOUS_CHALLENGE_PERCENTAGE=10.0
+      - L1_RPC=${OP_NODE__RPC_ENDPOINT}
+      - L2_RPC=op-geth:${PORT__OP_GETH_HTTP:-9993}
+      - FACTORY_ADDRESS=${DISPUTE_GAME_FACTORY_ADDRESS}
+      - GAME_TYPE=${DISPUTE_GAME_TYPE}
+      - PRIVATE_KEY=${DISPUTE_GAME_PRIVATE_KEY}
+    ports:
+      - ${PORT__CHALLENGER:-8080}:8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   prometheus:
     platform: linux/amd64
     image: prom/prometheus:${IMAGE_TAG__PROMETHEUS:-latest}
