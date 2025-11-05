@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ "$NETWORK_NAME" != "alfajores" ] && [ "$NETWORK_NAME" != "baklava" ] && [ "$NETWORK_NAME" != "mainnet" ]; then
+if [ "$NETWORK_NAME" != "mainnet" ]; then
   echo "Not starting historical-rpc-node for a non migrated chain (${NETWORK_NAME})"
   exit
 fi
