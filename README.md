@@ -62,7 +62,7 @@ The easiest way to start a Celo L2 node is with **snap sync**.
 
    ```sh
    # Celo Sepolia is recommended for testing
-   export NETWORK=<alfajores, baklava, celo-sepolia, or mainnet>
+   export NETWORK=<celo-sepolia or mainnet>
    cp $NETWORK.env .env
    ```
 
@@ -265,7 +265,7 @@ If you've been running a full node and wish to continue using the same datadir, 
 ./migrate.sh full <network> <source_L1_datadir> [dest_L2_datadir]
 ```
 
-Where `<network>` is one of `mainnet`, `alfajores` or `baklava` and the datadirs are the values that would be set with the `--datadir` flag in the celo-blockchain and the op-geth nodes.
+Where `<network>` is one of `mainnet` or `celo-sepolia` and the datadirs are the values that would be set with the `--datadir` flag in the celo-blockchain and the op-geth nodes.
 
 If the destination datadir is omitted `./envs/<network>/datadir` will be used.
 
