@@ -238,6 +238,8 @@ The "Simple Node Dashboard" (available at Dashboards > Manage > Simple Node Dash
 
 ![metrics dashboard gif](https://user-images.githubusercontent.com/14298799/171476634-0cb84efd-adbf-4732-9c1d-d737915e1fa7.gif)
 
+And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succinct Challenger) shows information about the challenger activity.
+
 ---
 
 ## L1 Data Migration
@@ -289,3 +291,67 @@ geth console --datadir <datadir>
 ```
 
 It seems that this issue is caused by the celo-blockchain client sometimes shutting down in an inconsistent state, which is repaired upon the next startup.
+
+## Running a challenger
+
+> In principal, running a challenger is the same as being a node-operator with an additional service running that
+> compares the proposped dispute-game L2 state-root with it's locally synced L2 state.
+> Whenever the proposed state-root does not match the operators local state,
+> a challenge is published to the L1 and the proposer is forced to compute a zk-proof for the proposed state-root.
+>
+> This mechanism requires that the challenger operator should run as much L2 infrastructure as possible themselves and
+> shouldn't trust an external party's service without deriving consensus locally.
+> Since the state-root has to be compared to historic state-roots of up to around a week ago the operator has to run a local L2 archive node.
+> Also, in order to guarantee being able to fully derive the L2 state from consensus L1 data, the challenger operator should run their own
+> eigenda-proxy service and not connect to a public S3 batch-cache.
+
+Please follow prior steps on how to run a node, and configure it to be an [archive-node](https://docs.celo.org/infra-partners/operators/run-node#running-an-archive-node).
+It is possible to run the archive node with snap-sync instead of full-sync, but this means that you have to wait around a week until
+you can verify the validity of older but active games.
+During that period the challenger will observe `"missing trie node ... state is not available"` errors.
+
+### Required steps
+
+Modify the `.env` file that you copied over with the following options:
+
+```
+NODE_TYPE=archive
+OP_GETH__SYNCMODE=full
+DATADIR_PATH=<path to a migrated L1 full node datadir>
+
+# disable fetching blobs from external (or local) cache
+EIGENDA_LOCAL_ARCHIVE_BLOBS=
+
+CHALLENGER__ENABLED=true
+CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key
+```
+
+The `CHALLENGER__PRIVATE_KEY` should correspond to an address that has challenger permission on the network's
+`AccessManager` contract and that is funded for at least (but better multiples of) covering the challenge bond.
+
+### Optional changes
+
+```
+# Reduce the load on the L1 node, since game timeouts are on the scale of days, this is generally okay for network security.
+# Note however, that submitting challenges is on a first-come basis, so increasing this to a higher value than other
+# operators will lead to very likely not being able to be the one submitting the challenge.
+# This also means that lowering this value increases the chance to successfully submit a challenge, but increases load on the L1 node.
+CHALLENGER__FETCH_INTERVAL_SECONDS=120
+
+# use a specific version of the challenger image
+IMAGE_TAG__CHALLENGER=v1.0.0
+
+
+# start the monitoring services (grafana, prometheus, influxdb)
+MONITORING_ENABLED=true
+
+# configure the exposed ports for the metrics to non-defaults
+PORT__PROMETHEUS=9091
+```
+
+Monitor challenger logs:
+
+```bash
+docker compose logs challenger -f --tail 10
+
+```
