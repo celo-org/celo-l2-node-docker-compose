@@ -131,13 +131,12 @@ For advanced use cases, you can configure a different node type and sync mode.
    ```
 
   Additionnally, you need to configure pre-migration data access. You have 3 options:
-
   - Provide the path to an existing pre-migration archive datadir. The script will automatically start a legacy archive node with that datadir and connect it to your L2 node.
 
     ```text
     HISTORICAL_RPC_DATADIR_PATH=<path to your pre-migration archive datadir>
     ```
-  
+
   - Not provide a path to an existing pre-migration archive datadir. The script will automatically start a legacy archive node which will begin syncing from the Celo genesis block. Note that syncing the legacy archive node will take some time, during which pre-migration archive access will not be available.
 
     ```text
@@ -294,21 +293,14 @@ It seems that this issue is caused by the celo-blockchain client sometimes shutt
 
 ## Running a challenger
 
-> In principal, running a challenger is the same as being a node-operator with an additional service running that
-> compares the proposped dispute-game L2 state-root with it's locally synced L2 state.
-> Whenever the proposed state-root does not match the operators local state,
-> a challenge is published to the L1 and the proposer is forced to compute a zk-proof for the proposed state-root.
->
-> This mechanism requires that the challenger operator should run as much L2 infrastructure as possible themselves and
-> shouldn't trust an external party's service without deriving consensus locally.
-> Since the state-root has to be compared to historic state-roots of up to around a week ago the operator has to run a local L2 archive node.
-> Also, in order to guarantee being able to fully derive the L2 state from consensus L1 data, the challenger operator should run their own
-> eigenda-proxy service and not connect to a public S3 batch-cache.
+> In principle, running a challenger is essentially the same as operating an L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
+> This mechanism requires the challenger operator to run as much of the L2 infrastructure as possible locally and to avoid relying on third-party services without independently deriving consensus.
+> Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
+> In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
 
-Please follow prior steps on how to run a node, and configure it to be an [archive-node](https://docs.celo.org/infra-partners/operators/run-node#running-an-archive-node).
-It is possible to run the archive node with snap-sync instead of full-sync, but this means that you have to wait around a week until
-you can verify the validity of older but active games.
-During that period the challenger will observe `"missing trie node ... state is not available"` errors.
+Refer to the previous instructions on how to run a node and configure it as an archive node.
+It is possible to run the archive node with snap sync instead of full sync; however, in that case you must wait approximately one week before you can verify the validity of older but still active games.
+During this period, the challenger will observe errors of the form `missing trie node ... state is not available`.
 
 ### Required steps
 
@@ -326,26 +318,26 @@ CHALLENGER__ENABLED=true
 CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key
 ```
 
-The `CHALLENGER__PRIVATE_KEY` should correspond to an address that has challenger permission on the network's
-`AccessManager` contract and that is funded for at least (but better multiples of) covering the challenge bond.
+The `CHALLENGER__PRIVATE_KEY` must correspond to an address that has challenger permissions on the network’s dispute-game access-manager contract and is funded with at least the required challenge bond.
+It is recommended that this address be funded with a multiple of the challenge bond amount.
 
 ### Optional changes
 
 ```
-# Reduce the load on the L1 node, since game timeouts are on the scale of days, this is generally okay for network security.
-# Note however, that submitting challenges is on a first-come basis, so increasing this to a higher value than other
-# operators will lead to very likely not being able to be the one submitting the challenge.
-# This also means that lowering this value increases the chance to successfully submit a challenge, but increases load on the L1 node.
+# Reduces load on the L1 node. Since game timeouts are on the order of days, this is generally acceptable from a network security perspective.
+# Note, however, that submitting challenges is on a first-come, first-served basis. Configuring a higher value than other
+# operators will significantly reduce the likelihood of being the one to submit the challenge.
+# Conversely, lowering this value increases the probability of successfully submitting a challenge, but also increases load on the L1 node.
 CHALLENGER__FETCH_INTERVAL_SECONDS=120
 
-# use a specific version of the challenger image
+# Use a specific version of the challenger image
 IMAGE_TAG__CHALLENGER=v1.0.0
 
 
-# start the monitoring services (grafana, prometheus, influxdb)
+# Start the monitoring services (Grafana, Prometheus, Influxdb)
 MONITORING_ENABLED=true
 
-# configure the exposed ports for the metrics to non-defaults
+# Configure the exposed ports for the metrics to non-defaults
 PORT__PROMETHEUS=9091
 ```
 
