@@ -298,7 +298,9 @@ It seems that this issue is caused by the celo-blockchain client sometimes shutt
 > Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
 > In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
 
-Refer to the previous instructions on how to run a node and configure it as an archive node.
+## Installation and Configuration
+
+Refer to the [previous instructions](#installation-and-configuration) and the [Celo Docs](https://docs.celo.org/cel2/operators/run-node) on how to run a node and configure it as an archive node.
 It is possible to run the archive node with snap sync instead of full sync; however, in that case you must wait approximately one week before you can verify the validity of older but still active games.
 During this period, the challenger will observe errors of the form `missing trie node ... state is not available`.
 
@@ -339,9 +341,9 @@ PORT__PROMETHEUS=9091
 
 ### Disable monitor-only mode
 
-The challenger runs in _monitor-only_ mode per default. This means that detected mismatches in the L2 output-root do not
-cause a `challenge()` transaction to be submitted to the dispute-game contracts, but this mistmatch is logged with a
-warning log message.
+The challenger runs in _monitor-only_ mode by default. This means that detected mismatches in the L2 state root do not
+cause a `challenge()` transaction to be submitted to the dispute game contracts, but this mismatch is logged with a
+warning log message. No on-chain transactions are sent in monitor-only mode.
 
 If you want to disable this mode, you can modify the `.env` file:
 
@@ -351,7 +353,7 @@ CHALLENGER__DISABLE_MONITOR_ONLY_MODE=true
 CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key with challenger permissions
 ```
 
-If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute-game access-manager contract and is funded with at least the required challenge bond.
+If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute game AccessManager contract and is funded with at least the required challenge bond.
 It is recommended that this address be funded with a multiple of the challenge bond amount.
 
 ### Monitor challenger logs:
