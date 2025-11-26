@@ -1,16 +1,20 @@
 global:
-  scrape_interval:     15s
+  scrape_interval: 15s
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'healthcheck'
+  - job_name: "healthcheck"
     static_configs:
-    - targets: ['healthcheck:7300']
+      - targets: ["healthcheck:7300"]
 
-  - job_name: 'fault-detector'
+  - job_name: "fault-detector"
     static_configs:
-    - targets: ['fault-detector:7300']
+      - targets: ["fault-detector:7300"]
 
-  - job_name: 'op-node'
+  - job_name: "op-node"
     static_configs:
-    - targets: ['op-node:7300']
+      - targets: ["op-node:7300"]
+
+  - job_name: "challenger"
+    static_configs:
+      - targets: ["challenger:7300"]
