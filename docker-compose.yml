@@ -106,6 +106,7 @@ services:
       - L2_RPC=http://op-geth:8545
       - PRIVATE_KEY=${CHALLENGER__PRIVATE_KEY}
       - FETCH_INTERVAL=${CHALLENGER__FETCH_INTERVAL_SECONDS:-30}
+      - DISABLE_MONITOR_ONLY=${CHALLENGER__DISABLE_MONITOR_ONLY_MODE:-false}
       - CHALLENGER_METRICS_PORT=7300
     expose: # only informative
       - "7300" # metrics

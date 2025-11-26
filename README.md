@@ -315,11 +315,7 @@ DATADIR_PATH=<path to a migrated L1 full node datadir>
 EIGENDA_LOCAL_ARCHIVE_BLOBS=
 
 CHALLENGER__ENABLED=true
-CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key
 ```
-
-The `CHALLENGER__PRIVATE_KEY` must correspond to an address that has challenger permissions on the network’s dispute-game access-manager contract and is funded with at least the required challenge bond.
-It is recommended that this address be funded with a multiple of the challenge bond amount.
 
 ### Optional changes
 
@@ -341,7 +337,24 @@ MONITORING_ENABLED=true
 PORT__PROMETHEUS=9091
 ```
 
-Monitor challenger logs:
+### Disable monitor-only mode
+
+The challenger runs in _monitor-only_ mode per default. This means that detected mismatches in the L2 output-root do not
+cause a `challenge()` transaction to be submitted to the dispute-game contracts, but this mistmatch is logged with a
+warning log message.
+
+If you want to disable this mode, you can modify the `.env` file:
+
+```
+CHALLENGER__DISABLE_MONITOR_ONLY_MODE=true
+
+CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key with challenger permissions
+```
+
+If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute-game access-manager contract and is funded with at least the required challenge bond.
+It is recommended that this address be funded with a multiple of the challenge bond amount.
+
+### Monitor challenger logs:
 
 ```bash
 docker compose logs challenger -f --tail 10
