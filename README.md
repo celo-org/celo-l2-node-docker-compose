@@ -333,7 +333,7 @@ During this period, the challenger will observe errors of the form `missing trie
 
 Modify the `.env` file that you copied over with the following options:
 
-```
+```sh
 NODE_TYPE=archive
 OP_GETH__SYNCMODE=full
 DATADIR_PATH=<path to a migrated L1 full node datadir>
@@ -346,7 +346,7 @@ CHALLENGER__ENABLED=true
 
 ### Optional changes
 
-```
+```sh
 # Reduces load on the L1 node. Since game timeouts are on the order of days, this is generally acceptable from a network security perspective.
 # Note, however, that submitting challenges is on a first-come, first-served basis. Configuring a higher value than other
 # operators will significantly reduce the likelihood of being the one to submit the challenge.
@@ -387,10 +387,11 @@ warning log message. No on-chain transactions are sent in monitor-only mode.
 
 If you want to disable this mode, you can modify the `.env` file:
 
-```
+```sh
 CHALLENGER__DISABLE_MONITOR_ONLY_MODE=true
 
-CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" # modify to your key with challenger permissions
+# modify to your key with challenger permissions
+CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 ```
 
 If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute game AccessManager contract and is funded with at least the required challenge bond.
@@ -400,5 +401,5 @@ It is recommended that this address be funded with a multiple of the challenge b
 
 ```bash
 docker compose logs challenger -f --tail 10
-
 ```
+
