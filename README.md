@@ -326,8 +326,6 @@ In order to ensure the ability to fully derive the L2 state from consensus L1 da
 ## Installation and Configuration
 
 Refer to the [previous instructions](#installation-and-configuration) and the [Celo Docs](https://docs.celo.org/cel2/operators/run-node) on how to run a node and configure it as an archive node.
-It is possible to run the archive node with snap sync instead of full sync; however, in that case you must wait approximately one week before you can verify the validity of older but still active games.
-During this period, the challenger will observe errors of the form `missing trie node ... state is not available`.
 
 ### Required steps
 
