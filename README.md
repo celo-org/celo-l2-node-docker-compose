@@ -403,3 +403,14 @@ It is recommended that this address be funded with a multiple of the challenge b
 docker compose logs challenger -f --tail 10
 ```
 
+### Alerting for challenges
+
+If you are running `MONITORING_ENABLED=true` or ingesting the challenger metrics in any other form,
+you can set up the following Prometheus datasource metrics in order to track challenges and errors in challenging:
+
+- `op_succinct_fp_challenger_games_challenged`
+  - gauge that increases by 1 after a challenge transaction has successfully been sent to the L1,
+  - in monitor-only mode, this increases after the challenge transaction would have been called but was skipped
+- `op_succinct_fp_challenger_game_challenging_error`
+  - gauge the increases by 1 if a challenge trasaction could not be successfully send to the L1
+  - in monitor-only mode, this will only increase due to serialization issues in the challenge transaction preparation
