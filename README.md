@@ -313,7 +313,7 @@ NODE_TYPE=archive
 OP_GETH__SYNCMODE=full
 DATADIR_PATH=<path to a migrated L1 full node datadir>
 
-# disable fetching blobs from external (or local) cache
+# disable fetching blobs from cache
 EIGENDA_LOCAL_ARCHIVE_BLOBS=
 
 CHALLENGER__ENABLED=true
@@ -329,7 +329,21 @@ CHALLENGER__ENABLED=true
 CHALLENGER__FETCH_INTERVAL_SECONDS=120
 
 # Use a specific version of the challenger image
+# See https://github.com/celo-org/op-succinct/releases for the latest releases
 IMAGE_TAG__CHALLENGER=v1.0.0
+
+# L1 node that the op-node (Bedrock) will get chain data from.
+# To ensure reliability node operators may wish to change this to point at a service they trust.
+# This is configured within the container, so requires a DNS-resolvable path to the url from there
+OP_NODE__RPC_ENDPOINT=https://<local-layer-1-execution-rpc-endpoint>
+
+# L1 beacon endpoint, you can setup your own or use Quicknode.
+# To ensure reliability node operators may wish to change this to point at a service they trust.
+# This is configured within the container, so requires a DNS resolvable path to the url from there
+OP_NODE__L1_BEACON=https://<local-layer-1-beacon-rpc-endpoint>
+
+# Type of RPC that op-node is connected to, see README
+OP_NODE__RPC_TYPE=basic
 
 
 # Start the monitoring services (Grafana, Prometheus, Influxdb)
@@ -337,6 +351,7 @@ MONITORING_ENABLED=true
 
 # Configure the exposed ports for the metrics to non-defaults
 PORT__PROMETHEUS=9091
+
 ```
 
 ### Disable monitor-only mode
