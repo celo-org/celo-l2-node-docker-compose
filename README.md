@@ -293,12 +293,12 @@ It seems that this issue is caused by the celo-blockchain client sometimes shutt
 
 ## Running a challenger
 
+> ⚠️ The instructions in this README are for illustrative purposes only. Please make your own assessments about trust assumptions, required services and configurations when running a challenger.
 
-> Running a challenger is essentially the same as operating an L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
-> This mechanism requires the challenger operator to run as much of the L2 infrastructure as possible locally and to avoid relying on third-party services without independently deriving consensus.
-> Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
-> In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
-
+Running a challenger is essentially the same as operating a L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
+This mechanism requires the challenger operator to run as much of the L2 infrastructure as possible locally and to avoid relying on third-party services without independently deriving consensus.
+Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
+In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
 
 ## Challenger requirements
 
