@@ -293,10 +293,35 @@ It seems that this issue is caused by the celo-blockchain client sometimes shutt
 
 ## Running a challenger
 
-> In principle, running a challenger is essentially the same as operating an L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
+
+> Running a challenger is essentially the same as operating an L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
 > This mechanism requires the challenger operator to run as much of the L2 infrastructure as possible locally and to avoid relying on third-party services without independently deriving consensus.
 > Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
 > In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
+
+
+## Challenger requirements
+
+- Ethereum (L1) execution node
+  - configure trusted remote RPC execution endpoint
+  - configuration and service not included in this setup
+- Ethereum (L1) consensus node
+  - configure trusted remote RPC consensus endpoint
+  - configuration and service not included in this setup
+- Celo (L2) execution node
+  - archive node
+  - full sync recommended
+- Celo (L2) consensus node
+  - consensus node with alt-da derivation
+  - execution-sync
+  - (consensus-sync for advanced trust assumptions, setup not supported in this configuration)
+- eigenda-proxy
+  - local proxy for L2 consensus node alt-da derivation backend
+  - connected to disperser for blob-retrieval
+  - not connected to Celo's public blob archive bucket
+- challenger account
+  - ethereum private-key with "challenger" permission on succinct dispute-game [AccessManager](https://etherscan.io/address/0xF59a19c5578291cB7fd22618D16281aDf76f2816#readContract#F6)
+  - funded with at least 0.01 Eth [challenger-bond](https://etherscan.io/address/0x113f434f82FF82678AE7f69Ea122791FE1F6b73e#readContract#F5) (better multiples of) plus `challenge()` transaction gas costs
 
 ## Installation and Configuration
 
@@ -369,7 +394,7 @@ CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef01234
 ```
 
 If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute game AccessManager contract and is funded with at least the required challenge bond.
-It is recommended that this address be funded with a multiple of the challenge bond amount.
+It is recommended that this address be funded with a multiple of the challenge bond amount (see [challenger requirements](#challenger-requirements).
 
 ### Monitor challenger logs:
 
