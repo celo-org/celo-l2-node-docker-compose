@@ -131,13 +131,12 @@ For advanced use cases, you can configure a different node type and sync mode.
    ```
 
   Additionnally, you need to configure pre-migration data access. You have 3 options:
-
   - Provide the path to an existing pre-migration archive datadir. The script will automatically start a legacy archive node with that datadir and connect it to your L2 node.
 
     ```text
     HISTORICAL_RPC_DATADIR_PATH=<path to your pre-migration archive datadir>
     ```
-  
+
   - Not provide a path to an existing pre-migration archive datadir. The script will automatically start a legacy archive node which will begin syncing from the Celo genesis block. Note that syncing the legacy archive node will take some time, during which pre-migration archive access will not be available.
 
     ```text
@@ -238,6 +237,8 @@ The "Simple Node Dashboard" (available at Dashboards > Manage > Simple Node Dash
 
 ![metrics dashboard gif](https://user-images.githubusercontent.com/14298799/171476634-0cb84efd-adbf-4732-9c1d-d737915e1fa7.gif)
 
+And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succinct Challenger) shows information about the challenger activity.
+
 ---
 
 ## L1 Data Migration
@@ -289,3 +290,125 @@ geth console --datadir <datadir>
 ```
 
 It seems that this issue is caused by the celo-blockchain client sometimes shutting down in an inconsistent state, which is repaired upon the next startup.
+
+## Running a challenger
+
+> ⚠️ The instructions in this README are for illustrative purposes only. Please make your own assessments about trust assumptions, required services and configurations when running a challenger.
+
+Running a challenger is essentially the same as operating a L2 node, with an additional service that compares the proposed dispute game L2 state root with its locally synced L2 state. Whenever the proposed state root does not match the operator's local state, the challenger publishes a challenge to L1 and the proposer is required to compute a zk-proof for the proposed state root.
+This mechanism requires the challenger operator to run as much of the L2 infrastructure as possible locally and to avoid relying on third-party services without independently deriving consensus.
+Because the state root must be compared to historical state roots up to approximately one week old, the operator must run a local L2 archive node.
+In order to ensure the ability to fully derive the L2 state from consensus L1 data, the challenger operator should also run a dedicated EigenDA proxy service rather than connecting to a public S3-backed batch cache.
+
+## Challenger requirements
+
+- Ethereum (L1) execution node
+  - configure trusted remote RPC execution endpoint
+  - configuration and service not included in this setup
+- Ethereum (L1) consensus node
+  - configure trusted remote RPC consensus endpoint
+  - configuration and service not included in this setup
+- Celo (L2) execution node
+  - archive node
+  - full sync recommended
+- Celo (L2) consensus node
+  - consensus node with alt-da derivation
+  - execution-sync
+  - (consensus-sync for advanced trust assumptions, setup not supported in this configuration)
+- eigenda-proxy
+  - local proxy for L2 consensus node alt-da derivation backend
+  - connected to disperser for blob-retrieval
+  - not connected to Celo's public blob archive bucket
+- challenger account
+  - ethereum private-key with "challenger" permission on succinct dispute-game [AccessManager](https://etherscan.io/address/0xF59a19c5578291cB7fd22618D16281aDf76f2816#readContract#F6)
+  - funded with at least 0.01 Eth [challenger-bond](https://etherscan.io/address/0x113f434f82FF82678AE7f69Ea122791FE1F6b73e#readContract#F5) (better multiples of) plus `challenge()` transaction gas costs
+
+## Installation and Configuration
+
+Refer to the [previous instructions](#installation-and-configuration) and the [Celo Docs](https://docs.celo.org/cel2/operators/run-node) on how to run a node and configure it as an archive node.
+
+### Required steps
+
+Modify the `.env` file that you copied over with the following options:
+
+```sh
+NODE_TYPE=archive
+OP_GETH__SYNCMODE=full
+DATADIR_PATH=<path to a migrated L1 full node datadir>
+
+# disable fetching blobs from cache
+EIGENDA_LOCAL_ARCHIVE_BLOBS=
+
+CHALLENGER__ENABLED=true
+```
+
+### Optional changes
+
+```sh
+# Reduces load on the L1 node. Since game timeouts are on the order of days, this is generally acceptable from a network security perspective.
+# Note, however, that submitting challenges is on a first-come, first-served basis. Configuring a higher value than other
+# operators will significantly reduce the likelihood of being the one to submit the challenge.
+# Conversely, lowering this value increases the probability of successfully submitting a challenge, but also increases load on the L1 node.
+CHALLENGER__FETCH_INTERVAL_SECONDS=120
+
+# Use a specific version of the challenger image
+# See https://github.com/celo-org/op-succinct/releases for the latest releases
+IMAGE_TAG__CHALLENGER=v1.0.0
+
+# L1 node that the op-node (Bedrock) will get chain data from.
+# To ensure reliability node operators may wish to change this to point at a service they trust.
+# This is configured within the container, so requires a DNS-resolvable path to the url from there
+OP_NODE__RPC_ENDPOINT=https://<local-layer-1-execution-rpc-endpoint>
+
+# L1 beacon endpoint, you can setup your own or use Quicknode.
+# To ensure reliability node operators may wish to change this to point at a service they trust.
+# This is configured within the container, so requires a DNS resolvable path to the url from there
+OP_NODE__L1_BEACON=https://<local-layer-1-beacon-rpc-endpoint>
+
+# Type of RPC that op-node is connected to, see README
+OP_NODE__RPC_TYPE=basic
+
+
+# Start the monitoring services (Grafana, Prometheus, Influxdb)
+MONITORING_ENABLED=true
+
+# Configure the exposed ports for the metrics to non-defaults
+PORT__PROMETHEUS=9091
+
+```
+
+### Disable monitor-only mode
+
+The challenger runs in _monitor-only_ mode by default. This means that detected mismatches in the L2 state root do not
+cause a `challenge()` transaction to be submitted to the dispute game contracts, but this mismatch is logged with a
+warning log message. No on-chain transactions are sent in monitor-only mode.
+
+If you want to disable this mode, you can modify the `.env` file:
+
+```sh
+CHALLENGER__DISABLE_MONITOR_ONLY_MODE=true
+
+# modify to your key with challenger permissions
+CHALLENGER__PRIVATE_KEY="0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+```
+
+If you want to actively challenge proposals, it is required that the `CHALLENGER__PRIVATE_KEY` corresponds to an address that has challenger permissions on the network’s dispute game AccessManager contract and is funded with at least the required challenge bond.
+It is recommended that this address be funded with a multiple of the challenge bond amount (see [challenger requirements](#challenger-requirements).
+
+### Monitor challenger logs:
+
+```bash
+docker compose logs challenger -f --tail 10
+```
+
+### Alerting for challenges
+
+If you are running `MONITORING_ENABLED=true` or ingesting the challenger metrics in any other form,
+you can set up the following Prometheus datasource metrics in order to track challenges and errors in challenging:
+
+- `op_succinct_fp_challenger_games_challenged`
+  - gauge that increases by 1 after a challenge transaction has successfully been sent to the L1,
+  - in monitor-only mode, this increases after the challenge transaction would have been called but was skipped
+- `op_succinct_fp_challenger_game_challenging_error`
+  - gauge the increases by 1 if a challenge trasaction could not be successfully send to the L1
+  - in monitor-only mode, this will only increase due to serialization issues in the challenge transaction preparation

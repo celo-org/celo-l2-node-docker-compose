@@ -88,6 +88,31 @@ services:
       op-geth:
         condition: service_started
 
+  challenger:
+    platform: linux/amd64
+    # TODO: once a stable version is released,
+    # add automatic "v{major}" tagging to the CI and reference "v1" here as default tag
+    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-succinct-challenger:${IMAGE_TAG__CHALLENGER:-1.0.0-rc.6}
+    restart: on-failure
+    stop_grace_period: 5m
+    entrypoint: /scripts/start-challenger.sh
+    env_file:
+      - ./envs/${NETWORK_NAME}/challenger.env
+    volumes:
+      - ./scripts/:/scripts
+    environment:
+      - CHALLENGER_ENABLED=${CHALLENGER__ENABLED}
+      - L1_RPC=${OP_NODE__RPC_ENDPOINT}
+      - L2_RPC=http://op-geth:8545
+      - PRIVATE_KEY=${CHALLENGER__PRIVATE_KEY}
+      - FETCH_INTERVAL=${CHALLENGER__FETCH_INTERVAL_SECONDS:-30}
+      - DISABLE_MONITOR_ONLY=${CHALLENGER__DISABLE_MONITOR_ONLY_MODE:-false}
+      - CHALLENGER_METRICS_PORT=7300
+    expose: # only informative
+      - "7300" # metrics
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   prometheus:
     platform: linux/amd64
     image: prom/prometheus:${IMAGE_TAG__PROMETHEUS:-latest}
@@ -113,6 +138,7 @@ services:
     volumes:
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
       - ./docker/grafana/dashboards/simple_node_dashboard.json:/var/lib/grafana/dashboards/simple_node_dashboard.json
+      - ./docker/grafana/dashboards/challenger_dashboard.json:/var/lib/grafana/dashboards/challenger_dashboard.json
       - grafana_data:/var/lib/grafana
       - ./scripts/start-grafana.sh:/scripts/start-grafana.sh
     ports:
