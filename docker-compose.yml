@@ -90,9 +90,7 @@ services:
 
   challenger:
     platform: linux/amd64
-    # TODO: once a stable version is released,
-    # add automatic "v{major}" tagging to the CI and reference "v1" here as default tag
-    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-succinct-challenger:${IMAGE_TAG__CHALLENGER:-1.0.0-rc.6}
+    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-succinct-challenger:${IMAGE_TAG__CHALLENGER:-v1}
     restart: on-failure
     stop_grace_period: 5m
     entrypoint: /scripts/start-challenger.sh
