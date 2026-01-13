@@ -67,6 +67,7 @@ exec geth \
   --authrpc.jwtsecret=/shared/jwt.txt \
   --rollup.sequencerhttp="$BEDROCK_SEQUENCER_HTTP" \
   --rollup.disabletxpoolgossip=true \
+  --bootnodes="$GETH_BOOTNODES" \
   --port="${PORT__OP_GETH_P2P:-39393}" \
   --discovery.port="${PORT__OP_GETH_P2P:-39393}" \
   --nat=$OP_GETH__NAT \
