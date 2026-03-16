@@ -15,7 +15,9 @@
       "scalar": "0x0100000000000000000000000000000000000000000000000000000000000000",
       "gasLimit": 60000000,
       "eip1559Params": "0x0000000000000000",
-      "operatorFeeParams": "0x0000000000000000000000000000000000000000000000000000000000000000"
+      "operatorFeeParams": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "minBaseFee": 0,
+      "daFootprintGasScalar": 0
     }
   },
   "block_time": 1,
@@ -33,6 +35,7 @@
   "granite_time": 0,
   "holocene_time": 0,
   "isthmus_time": 0,
+  "jovian_time": 1773749037,
   "batch_inbox_address": "0x00076c1f80cdb1d670046465c5ccd04e9e78c1f0",
   "deposit_contract_address": "0x44ae3d41a335a7d05eb533029917aad35662dcc2",
   "l1_system_config_address": "0x760a5f022c9940f4a074e0030be682f560d29818",

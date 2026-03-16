@@ -14,7 +14,10 @@
       "overhead": "0x0000000000000000000000000000000000000000000000000000000000000000",
       "scalar": "0x0100000000000000000000000000000000000000000000000000000000000000",
       "gasLimit": 30000000,
-      "eip1559Params": "0x0000000000000000"
+      "eip1559Params": "0x0000000000000000",
+      "operatorFeeParams": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "minBaseFee": 0,
+      "daFootprintGasScalar": 0
     }
   },
   "block_time": 1,
@@ -30,6 +33,10 @@
   "ecotone_time": 0,
   "fjord_time": 0,
   "granite_time": 0,
+  "holocene_time": 1752073200,
+  "isthmus_time": 1752073200,
+  "pectra_blob_schedule_time": 1752073200,
+  "jovian_time": 1774958788,
   "batch_inbox_address": "0xff00000000000000000000000000000000042220",
   "deposit_contract_address": "0xc5c5d157928bdbd2acf6d0777626b6c75a9eaedc",
   "l1_system_config_address": "0x89e31965d844a309231b1f17759ccaf1b7c09861",
