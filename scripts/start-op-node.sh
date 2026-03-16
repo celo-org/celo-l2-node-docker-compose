@@ -2,7 +2,7 @@
 set -e
 
 if [ -n "${IS_CUSTOM_CHAIN}" ]; then
-  export EXTENDED_ARG="${EXTENDED_ARG:-} --rollup.config=/chainconfig/rollup.json"
+  export EXTENDED_ARG="${EXTENDED_ARG:-} --rollup.config=/chainconfig/rollup.json --rollup.load-protocol-versions=true"
   if [ ! -f /chainconfig/rollup.json ]; then
     echo "Missing rollup.json file: Either update the repo to pull the published rollup.json or migrate your Celo L1 datadir to generate rollup.json."
     exit
