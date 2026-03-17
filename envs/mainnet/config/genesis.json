@@ -124,6 +124,9 @@
     "fjordTime": 1742957258,
     "gingerbreadBlock": 21616000,
     "graniteTime": 1742957258,
+    "holoceneTime": 1752073200,
+    "isthmusTime": 1752073200,
+    "pragueTime": 1752073200,
     "grayGlacierBlock": 31056500,
     "homesteadBlock": 0,
     "istanbulBlock": 0,
@@ -145,4 +148,3 @@
   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
   "timestamp": "0x5ea06a00"
 }
-
