@@ -23,7 +23,7 @@
   "block_time": 1,
   "max_sequencer_drift": 2892,
   "seq_window_size": 7200,
-  "channel_timeout": 50,
+  "channel_timeout": 300,
   "l1_chain_id": 1,
   "l2_chain_id": 42220,
   "regolith_time": 0,
@@ -53,4 +53,3 @@
     "eip1559DenominatorCanyon": 400
   }
 }
-
