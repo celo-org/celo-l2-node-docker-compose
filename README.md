@@ -241,6 +241,24 @@ And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succ
 
 ---
 
+## Using celo-reth as Execution Client
+
+You can use [celo-reth](https://github.com/celo-org/celo-reth) as an alternative execution client instead of op-geth. This uses a Docker Compose override file that disables op-geth and adds a celo-reth service in its place.
+
+```sh
+IMAGE_TAG__CELO_RETH=your-image:tag docker compose -f docker-compose.yml -f docker-compose.celo-reth.yml up -d --build
+```
+
+Or set `IMAGE_TAG__CELO_RETH` in your `.env` file and run:
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.celo-reth.yml up -d --build
+```
+
+All other configuration (`.env` variables, monitoring, challenger, etc.) works the same as with op-geth.
+
+---
+
 ## L1 Data Migration
 
 > 💡 Most users should use snap sync (default) and skip this section. Migration is only needed for specific use cases requiring full historical verification or archive functionality.
