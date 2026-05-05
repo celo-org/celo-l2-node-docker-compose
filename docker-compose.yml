@@ -88,6 +88,26 @@ services:
       op-geth:
         condition: service_started
 
+  espresso-rollup-node-proxy:
+    platform: linux/amd64
+    image: ghcr.io/espressosystems/espresso-rollup-node-proxy:${IMAGE_TAG__ESPRESSO_PROXY:-v0.0.1}
+    restart: on-failure
+    stop_grace_period: 5m
+    entrypoint: /scripts/start-espresso-rollup-node-proxy.sh
+    env_file:
+      - ./envs/${NETWORK_NAME}/espresso-rollup-node-proxy.env
+      - .env
+    volumes:
+      - ./scripts/:/scripts
+      - espresso-proxy-data:/home/proxyuser
+    ports:
+      - ${PORT__ESPRESSO_PROXY:-8080}:8080
+    depends_on:
+      op-geth:
+        condition: service_started
+      op-node:
+        condition: service_started
+
   challenger:
     platform: linux/amd64
     image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-succinct-challenger:${IMAGE_TAG__CHALLENGER:-v2}
@@ -163,4 +183,5 @@ volumes:
   prometheus_data:
   grafana_data:
   influxdb_data:
+  espresso-proxy-data:
   shared:

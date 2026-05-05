@@ -106,8 +106,9 @@ The easiest way to start a Celo L2 node is with **snap sync**.
 - **OP_GETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-geth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`.
 - **IPC_PATH** - Alternative location for the geth IPC file if filesystem compatibility issues occur.
-- **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
+- **IMAGE_TAG[...]__** - Use a custom Docker image for specified components (e.g. `IMAGE_TAG__ESPRESSO_PROXY`, `IMAGE_TAG__CHALLENGER`, `IMAGE_TAG__OP_GETH`, etc.).
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
+
 
 ### Node Types and Sync Modes
 
@@ -148,6 +149,48 @@ For advanced use cases, you can configure a different node type and sync mode.
     ```text
     OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
+
+
+## Espresso Rollup Node Proxy
+
+The `espresso-rollup-node-proxy` service runs alongside the Celo L2 node and verifies L2 blocks against Espresso’s HotShot consensus. Clients can use an Espresso-specific block tag, defaulting to "espresso", in their JSON-RPC calls. The proxy resolves that tag to the latest L2 block number confirmed by Espresso’s HotShot consensus.
+
+The proxy can also be configured to intercept standard block tags such as "finalized", "safe", and "latest" and resolve them to the rollup block number confirmed by HotShot.
+
+Note: Any request that does not contain the configured Espresso tag is proxied to op-geth without interception, so all standard JSON-RPC functionality is preserved.
+
+The proxy waits for op-geth to fully sync before starting and stores its state in a persistent volume.
+
+### Configuration
+
+The Espresso proxy requires the following environment variables to be set in `envs/<network>/espresso-rollup-node-proxy.env` file:
+
+- **ESPRESSO_QUERY_SERVICE_URL** - URL for the Espresso query service used by the rollup node proxy.
+- **ESPRESSO_LIGHT_CLIENT_ADDRESS** - Contract address of the Espresso light client on L1.
+- **BATCHER_ADDR** - Address of the Celo TEE batcher, used by the Espresso proxy for transaction verification
+- **BATCH_AUTH_ADDR** - Address of the Espresso batch authenticator contract.
+- **ESPRESSO_INITIAL_HOTSHOT_HEIGHT** - The HotShot block height from which the Espresso proxy begins verification
+- **PORT__ESPRESSO_PROXY** - Exposed port for the Espresso rollup node proxy. Defaults to `8080`.
+
+The proxy also requires `OP_NODE__RPC_ENDPOINT` to be set (shared with the op-node configuration).
+
+Some defaults are pre-configured in `envs/celo-sepolia/espresso-rollup-node-proxy.env`. You will still need to provide `BATCHER_ADDR`, `BATCH_AUTH_ADDR`, and `ESPRESSO_INITIAL_HOTSHOT_HEIGHT`.
+
+To use a specific version of the Espresso proxy image:
+
+```text
+IMAGE_TAG__ESPRESSO_PROXY=<tag>
+```
+
+If unset, the default tag (`v0.0.1`) is used.
+
+### Monitor Espresso Proxy Logs
+
+```sh
+docker compose logs espresso-rollup-node-proxy -f --tail 10
+```
+
+---
 
 ### P2P Networking Environment Variables
 
@@ -215,6 +258,7 @@ docker compose logs -f --tail 10
 docker compose logs op-geth -f --tail 10
 docker compose logs op-node -f --tail 10
 docker compose logs eigenda-proxy -f --tail 10
+docker compose logs espresso-rollup-node-proxy -f --tail 10
 ```
 
 **Check sync progress:**
@@ -240,6 +284,7 @@ The "Simple Node Dashboard" (available at Dashboards > Manage > Simple Node Dash
 And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succinct Challenger) shows information about the challenger activity.
 
 ---
+
 
 ## L1 Data Migration
 
