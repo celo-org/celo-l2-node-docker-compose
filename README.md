@@ -174,7 +174,7 @@ The Espresso proxy requires the following environment variables to be set in `en
 
 The proxy also requires `OP_NODE__RPC_ENDPOINT` to be set (shared with the op-node configuration).
 
-Some defaults are pre-configured in `envs/celo-sepolia/espresso-rollup-node-proxy.env`. You will still need to provide `BATCHER_ADDR`, `BATCH_AUTH_ADDR`, and `ESPRESSO_INITIAL_HOTSHOT_HEIGHT`.
+Some defaults are pre-configured in `envs/celo-sepolia/espresso-rollup-node-proxy.env`. You will still need to provide `ESPRESSO_QUERY_SERVICE_URL`, `BATCHER_ADDR`, `BATCH_AUTH_ADDR`, and `ESPRESSO_INITIAL_HOTSHOT_HEIGHT`.
 
 To use a specific version of the Espresso proxy image:
 
