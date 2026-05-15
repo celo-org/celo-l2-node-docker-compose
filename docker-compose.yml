@@ -97,6 +97,8 @@ services:
     env_file:
       - ./envs/${NETWORK_NAME}/espresso-rollup-node-proxy.env
       - .env
+    environment:
+      - ESPRESSO_ENABLED=${ESPRESSO_ENABLED}
     volumes:
       - ./scripts/:/scripts
       - espresso-proxy-data:/home/proxyuser

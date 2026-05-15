@@ -1,10 +1,16 @@
 #!/bin/sh
 set -e
 
+if [ "$ESPRESSO_ENABLED" != "true" ]; then
+  echo "ESPRESSO_ENABLED is not set to 'true'"
+  echo "Not starting espresso-rollup-node-proxy"
+  exit
+fi
+
 trap 'echo "Received shutdown signal, exiting..."; exit 0' TERM INT
 
-if [ -z "$BATCHER_ADDR" ]; then
-  echo "Error: BATCHER_ADDR environment variable is not set."
+if [ -z "$TEE_BATCHER_ADDR" ]; then
+  echo "Error: TEE_BATCHER_ADDR environment variable is not set."
   exit 1
 fi
 
@@ -48,17 +54,22 @@ while true; do
   sleep 30 & wait $!
 done
 
+ESPRESSO_TAG_FLAG=""
+if [ -n "$ESPRESSO_TAG" ]; then
+  ESPRESSO_TAG_FLAG="--espresso-tag=$ESPRESSO_TAG"
+fi
+
 exec espresso-rollup-node-proxy \
   --listen-addr=:8080 \
   --store-file-path=/home/proxyuser/espresso_store.json \
-  --espresso-tag="$ESPRESSO_TAG" \
+  $ESPRESSO_TAG_FLAG \
   --full-node-execution-rpc=http://op-geth:8545 \
   --l1-rpc="$OP_NODE__RPC_ENDPOINT" \
   --initial-hotshot-height="$ESPRESSO_INITIAL_HOTSHOT_HEIGHT" \
   --op.full-node-consensus-rpc=http://op-node:9545 \
   --op.query-service-url="$ESPRESSO_QUERY_SERVICE_URL" \
   --op.light-client-address="$ESPRESSO_LIGHT_CLIENT_ADDRESS" \
-  --op.batcher-address="$BATCHER_ADDR" \
+  --op.batcher-address="$TEE_BATCHER_ADDR" \
   --op.verification-interval=10ms \
   --op.batch-authenticator-address="$BATCH_AUTH_ADDR" \
   "$@"
