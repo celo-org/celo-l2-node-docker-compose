@@ -351,6 +351,10 @@ CHALLENGER__ENABLED=true
 # Conversely, lowering this value increases the probability of successfully submitting a challenge, but also increases load on the L1 node.
 CHALLENGER__FETCH_INTERVAL_SECONDS=120
 
+# Maximum time (seconds) the challenger waits for an L1 transaction (e.g. a `challenge()` call) to be confirmed.
+# Raise this if your L1 RPC is slow or commonly under load.
+CHALLENGER__TX_CONFIRMATION_TIMEOUT_SECONDS=180
+
 # Use a specific version of the challenger image
 # See https://github.com/celo-org/op-succinct/releases for the latest releases
 IMAGE_TAG__CHALLENGER=v1.0.0
