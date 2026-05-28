@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# Create JWT if it doesn't exist
-if [ ! -f "/shared/jwt.txt" ]; then
+# Create JWT if it doesn't exist (or was left zero-byte by a previous broken run)
+if [ ! -s "/shared/jwt.txt" ]; then
   echo "Creating JWT..."
   mkdir -p /shared
   dd bs=1 count=32 if=/dev/urandom of=/dev/stdout | xxd -p -c 32 > /shared/jwt.txt

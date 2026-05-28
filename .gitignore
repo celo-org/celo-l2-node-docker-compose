@@ -1,4 +1,4 @@
 .env
 
 envs/*/migration-config/*.json
-envs/*/datadir
+envs/*/datadir*

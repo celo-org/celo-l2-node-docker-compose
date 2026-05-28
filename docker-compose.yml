@@ -64,6 +64,40 @@ services:
       - ${PORT__OP_GETH_P2P:-39393}:${PORT__OP_GETH_P2P:-39393}/tcp
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      default:
+        aliases:
+          - el
+    profiles:
+      - op-geth
+
+  celo-reth:
+    platform: linux/amd64
+    image: us-west1-docker.pkg.dev/devopsre/dev-images/celo-kona-reth:${IMAGE_TAG__CELO_RETH:-sha-7dd8435@sha256:3413f492ce910600b2f2de04ecfe5909a6d6097a39456f11db5d5ac63d205af5}
+    restart: on-failure
+    stop_grace_period: 5m
+    entrypoint: /scripts/start-celo-reth.sh
+    env_file:
+      - ./envs/${NETWORK_NAME}/celo-reth.env
+      - .env
+    volumes:
+      - ./scripts/:/scripts
+      - shared:/shared
+      - ${DATADIR_PATH_CELO_RETH:-./envs/${NETWORK_NAME}/datadir-celo-reth}:/celo
+    ports:
+      - ${PORT__CELO_RETH_HTTP:-${PORT__OP_GETH_HTTP:-9993}}:8545
+      - ${PORT__CELO_RETH_WS:-${PORT__OP_GETH_WS:-9994}}:8546
+      - ${PORT__CELO_RETH_P2P:-${PORT__OP_GETH_P2P:-39393}}:30303/udp
+      - ${PORT__CELO_RETH_P2P:-${PORT__OP_GETH_P2P:-39393}}:30303/tcp
+      - ${PORT__CELO_RETH_METRICS:-6060}:6060
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      default:
+        aliases:
+          - el
+    profiles:
+      - celo-reth
 
   op-node:
     platform: linux/amd64
@@ -84,9 +118,6 @@ services:
       - ${PORT__OP_NODE_HTTP:-9545}:9545
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    depends_on:
-      op-geth:
-        condition: service_started
 
   challenger:
     platform: linux/amd64
@@ -101,7 +132,7 @@ services:
     environment:
       - CHALLENGER_ENABLED=${CHALLENGER__ENABLED}
       - L1_RPC=${OP_NODE__RPC_ENDPOINT}
-      - L2_RPC=http://op-geth:8545
+      - L2_RPC=http://el:8545
       - PRIVATE_KEY=${CHALLENGER__PRIVATE_KEY}
       - FETCH_INTERVAL=${CHALLENGER__FETCH_INTERVAL_SECONDS:-30}
       - DISABLE_MONITOR_ONLY=${CHALLENGER__DISABLE_MONITOR_ONLY_MODE:-false}

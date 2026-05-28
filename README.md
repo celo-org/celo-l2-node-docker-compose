@@ -88,6 +88,12 @@ The easiest way to start a Celo L2 node is with **snap sync**.
 
 ### Key Environment Variables
 
+- **COMPOSE_PROFILES** - Which L2 execution layer (EL) Docker Compose profile to activate. Must be set; defaults are baked into the env files.
+  - `op-geth` (default) - production-grade EL, supported on both mainnet and celo-sepolia.
+  - `celo-reth` - PoC celo-kona reth EL, **celo-sepolia only**. Requires `roles/artifactregistry.reader` on the `devopsre` GCP project to pull the image (see [Execution Layer Selection](#execution-layer-selection) below).
+
+  ⚠️ Upgraders: this variable is new. If you re-pull without re-copying `<network>.env`, add `COMPOSE_PROFILES=op-geth` to your existing `.env` or no EL service will start.
+
 - **NODE_TYPE**
   - `full` - A full node stores historical state only for recent blocks.
   - `archive` - An archive node stores historical state for the entire history of the blockchain.
@@ -148,6 +154,29 @@ For advanced use cases, you can configure a different node type and sync mode.
     ```text
     OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
+
+### Execution Layer Selection
+
+By default the stack runs `op-geth` as the L2 execution layer. On **celo-sepolia only**, you can switch to `celo-reth` — the reth-based EL from [celo-kona](https://github.com/celo-org/celo-kona) — as a PoC alternative.
+
+To switch, edit `.env`:
+
+```sh
+COMPOSE_PROFILES=celo-reth
+```
+
+Then start the stack normally with `docker compose up -d`. Compose profiles ensure only the chosen EL service runs; the two clients share the same `op-node`, `eigenda-proxy`, and JWT volume, but write to **separate datadirs** (`DATADIR_PATH` for op-geth, `DATADIR_PATH_CELO_RETH` for celo-reth) because their on-disk formats are incompatible. Switching back to op-geth resumes from its own datadir without re-syncing.
+
+**Image access:** `celo-kona-reth` images live in Celo's private GCP Artifact Registry. To pull, you need `roles/artifactregistry.reader` on the `devopsre` project. Authenticate once:
+
+```sh
+gcloud auth login
+gcloud auth configure-docker us-west1-docker.pkg.dev
+```
+
+External operators without access cannot run `celo-reth` yet — keep `COMPOSE_PROFILES=op-geth`. A public mirror may follow once the integration leaves PoC status.
+
+**Mainnet:** `celo-reth` is **not** supported via this docker-compose for mainnet. The mainnet `.env` is pinned to `COMPOSE_PROFILES=op-geth`. Mainnet operators interested in reth should follow the [Hetzner/ansible playbook](https://github.com/celo-org/infrastructure/tree/master/ansible/roles/celo_op_reth), which adds historical-RPC proxying and the proofs-history sidecar that this PoC omits.
 
 ### P2P Networking Environment Variables
 
