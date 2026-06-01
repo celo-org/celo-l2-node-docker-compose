@@ -1,23 +1,23 @@
 #!/bin/sh
 set -e
 
-if [ -n "${IS_CUSTOM_CHAIN}" ]; then
-  export EXTENDED_ARG="${EXTENDED_ARG:-} --rollup.config=/chainconfig/rollup.json --rollup.load-protocol-versions=true"
-  if [ ! -f /chainconfig/rollup.json ]; then
-    echo "Missing rollup.json file: Either update the repo to pull the published rollup.json or migrate your Celo L1 datadir to generate rollup.json."
-    exit
-  fi
-else
-  export EXTENDED_ARG="${EXTENDED_ARG:-} --network=$NETWORK_NAME --rollup.load-protocol-versions=true --rollup.halt=major"
-fi
+# Map NETWORK_NAME to the superchain-registry network name used by --network.
+case "$NETWORK_NAME" in
+  mainnet) CELO_NETWORK=celo-mainnet ;;
+  celo-sepolia) CELO_NETWORK=celo-sepolia ;;
+  *) echo "Unknown NETWORK_NAME: '$NETWORK_NAME'"; exit 1 ;;
+esac
 
-if [ -n $OP_NODE__P2P_ADVERTISE_IP ]; then
+# Load the rollup config from the superchain-registry by network name.
+export EXTENDED_ARG="${EXTENDED_ARG:-} --network=$CELO_NETWORK --rollup.load-protocol-versions=true --rollup.halt=major"
+
+if [ -n "$OP_NODE__P2P_ADVERTISE_IP" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --p2p.advertise.ip=$OP_NODE__P2P_ADVERTISE_IP"
 fi
 
 # OP_NODE_ALTDA_DA_SERVER is picked up by the op-node binary.
 export OP_NODE_ALTDA_DA_SERVER=$EIGENDA_PROXY_ENDPOINT
-if [ -z $OP_NODE_ALTDA_DA_SERVER ]; then
+if [ -z "$OP_NODE_ALTDA_DA_SERVER" ]; then
   OP_NODE_ALTDA_DA_SERVER="http://eigenda-proxy:4242"
 fi
 

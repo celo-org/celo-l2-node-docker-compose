@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+# Map NETWORK_NAME to the superchain-registry network name used by --op-network.
+case "$NETWORK_NAME" in
+  mainnet) CELO_NETWORK=celo-mainnet ;;
+  celo-sepolia) CELO_NETWORK=celo-sepolia ;;
+  *) echo "Unknown NETWORK_NAME: '$NETWORK_NAME'"; exit 1 ;;
+esac
+
 # Create JWT if it doesn't exist
 if [ ! -f "/shared/jwt.txt" ]; then
   echo "Creating JWT..."
@@ -15,16 +22,6 @@ fi
 
 if [ -n "$IPC_PATH" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --ipcpath=$IPC_PATH"
-fi
-
-# Init genesis if it's a custom chain and the datadir is empty
-if [ -n "${IS_CUSTOM_CHAIN}" ] && [ -z "$(ls -A "$BEDROCK_DATADIR")" ]; then
-  echo "Initializing custom chain genesis..."
-  if [ ! -f /chainconfig/genesis.json ]; then
-    echo "Missing genesis.json file: Either update the repo to pull the published genesis.json or migrate your Celo L1 datadir to generate genesis.json."
-    exit
-  fi
-  geth init --datadir="$BEDROCK_DATADIR" /chainconfig/genesis.json
 fi
 
 # Determine syncmode based on NODE_TYPE
@@ -47,6 +44,7 @@ fi
 # Start op-geth.
 exec geth \
   --datadir="$BEDROCK_DATADIR" \
+  --op-network="$CELO_NETWORK" \
   --http \
   --http.corsdomain="*" \
   --http.vhosts="*" \

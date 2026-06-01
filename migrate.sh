@@ -102,11 +102,13 @@ if ! (
 fi
 
 
+# Write the migration tool's rollup-config and genesis outputs to the (gitignored)
+# migration-config dir. The node loads its chain config from the superchain-registry,
+# so these files are not used at runtime.
 docker run -it --rm \
   -v "${source_dir}/celo/chaindata:/old-db" \
   -v "${destination_dir}/geth/chaindata:/new-db" \
   -v "${migration_config_dir}:/migration-config" \
-  -v "./envs/${network}/config:/out-config" \
   "${cel2_migration_tool_image}" \
   "${operation}" \
     --old-db /old-db \
@@ -115,19 +117,12 @@ docker run -it --rm \
     --l1-deployments /migration-config/deployment-l1.json \
     --l2-allocs /migration-config/l2-allocs.json \
     --l1-rpc "${OP_NODE__RPC_ENDPOINT}" \
-    --outfile.rollup-config /out-config/rollup.json \
-    --outfile.genesis /out-config/genesis.json \
+    --outfile.rollup-config /migration-config/rollup.json \
+    --outfile.genesis /migration-config/genesis.json \
     --migration-block-number="$MIGRATION_BLOCK_NUMBER" "$L1_BEACON_RPC_FLAG"
 
 # Put a blank line before the summary
 echo ""
-# Use git to check if the rollup.json or genesis.json files have changed, if so then something went wrong with the migration.
-# Note in the case that this is the first migration then the check will pass.
-if git diff --quiet "./envs/${network}/config/rollup.json" "./envs/${network}/config/genesis.json"; then
-    printf "\033[0;32mMigration successful\033[0m\n"
-else
-    printf "\033[0;31mMigration failed, output rollup.json and genesis.json do not match stored versions\033[0m\n"
-    # Display the diff for the rollup.json and genesis.json files
-    git diff "./envs/${network}/config/rollup.json" "./envs/${network}/config/genesis.json"
-    exit 1
-fi
+# The migrated datadir is validated at node startup: op-geth refuses to start if the
+# migrated genesis does not match the superchain-registry config for the network.
+printf "\033[0;32mMigration successful\033[0m\n"
