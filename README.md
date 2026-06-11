@@ -56,8 +56,6 @@ cd celo-l2-node-docker-compose
 
 ### Configure Your Node
 
-The easiest way to start a Celo L2 node is with **snap sync**.
-
 1. **Choose your network** and copy the corresponding environment file:
 
    ```sh
@@ -66,14 +64,14 @@ The easiest way to start a Celo L2 node is with **snap sync**.
    cp $NETWORK.env .env
    ```
 
-   The `.env` file contains all the necessary configuration options for your node and is pre-configured for snap sync and full (non-archive) mode.
+   The `.env` file contains all the necessary configuration options for your node and is pre-configured for a full (non-archive) node.
 
 2. **Configure P2P networking** (required for production):
    Edit your `.env` file and set these variables for external connectivity.
 
    ```text
    OP_NODE__P2P_ADVERTISE_IP=<your-public-ip>
-   OP_GETH__NAT=extip:<your-public-ip>
+   OP_RETH__NAT=extip:<your-public-ip>
    ```
 
 3. **Optional: Configure L1 RPC endpoints**
@@ -91,9 +89,6 @@ The easiest way to start a Celo L2 node is with **snap sync**.
 - **NODE_TYPE**
   - `full` - A full node stores historical state only for recent blocks.
   - `archive` - An archive node stores historical state for the entire history of the blockchain.
-- **OP_GETH__SYNCMODE** - Sync mode to use for L2 node
-  - `snap` - Downloads chaindata from peers until it receives an unbroken chain of headers up through the most recent block, and only begins executing transactions from that point on.
-  - `full` - Executes all transactions from genesis (or the last block in the datadir) to verify every header.
 - **OP_NODE__RPC_ENDPOINT** - Layer 1 RPC endpoint (e.g., Ethereum mainnet). For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__L1_BEACON** - Layer 1 beacon endpoint. For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__RPC_TYPE** - Service provider type for the L1 RPC endpoint:
@@ -102,32 +97,26 @@ The easiest way to start a Celo L2 node is with **snap sync**.
   - `erigon` - Erigon
   - `basic` - Other providers
 - **HEALTHCHECK__REFERENCE_RPC_PROVIDER** - Public healthcheck RPC endpoint for the Layer 2 network.
-- **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-geth will be configured to proxy those requests to the Celo L1 node.
-- **OP_GETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-geth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
-- **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`.
-- **IPC_PATH** - Alternative location for the geth IPC file if filesystem compatibility issues occur.
+- **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
+- **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
+- **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
-### Node Types and Sync Modes
+### Node Types
 
-The default configuration runs a snap sync full node, the fastest and easiest way to get started.
-For advanced use cases, you can configure a different node type and sync mode.
+op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only controls how much historical state is retained.
 
-- **Full sync node**: executes all transactions from genesis (or the last block in the datadir) to verify every header. Requires a migrated pre-migration datadir for complete historical verification. See the [L1 Data Migration](#l1-data-migration) section below.
+- **Full node**: prunes historical state, keeping it only for recent blocks.
 
    ```text
    NODE_TYPE=full
-   OP_GETH__SYNCMODE=full
-   DATADIR_PATH=<path to a migrated L1 full node datadir>
    ```
 
-- **Archive node**: Stores complete historical state. Requires a migrated pre-migration datadir for complete historical verification. See the [L1 Data Migration](#l1-data-migration) section below.
+- **Archive node**: Stores complete historical state for the L2 chain.
 
    ```text
    NODE_TYPE=archive
-   OP_GETH__SYNCMODE=full
-   DATADIR_PATH=<path to a migrated L1 full node datadir>
    ```
 
   Additionnally, you need to configure pre-migration data access. You have 3 options:
@@ -146,7 +135,7 @@ For advanced use cases, you can configure a different node type and sync mode.
   - Provide the RPC URL of a running legacy archive node. This will override any value set for HISTORICAL_RPC_DATADIR_PATH and a legacy archive node will not be launched when you start your L2 node.
 
     ```text
-    OP_GETH__HISTORICAL_RPC=<historical rpc node endpoint>
+    OP_RETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
 
 ### P2P Networking Environment Variables
@@ -155,8 +144,8 @@ For advanced use cases, you can configure a different node type and sync mode.
 
 - **OP_NODE__P2P_ADVERTISE_IP** - Public IP to be shared via discovery so that other nodes can connect to your node.
 - **PORT__OP_NODE_P2P** - Port for op-node P2P discovery. Defaults to `9222`.
-- **OP_GETH__NAT** - Controls how op-geth determines its public IP. Use `extip:<your-public-ip>` for most reliable setup. Other values: `(any|none|upnp|pmp|pmp:<IP>|extip:<IP>|stun:<IP:PORT>)`.
-- **PORT__OP_GETH_P2P** - Port for op-geth P2P discovery. Defaults to `30303`.
+- **OP_RETH__NAT** - Controls how op-reth determines its public IP. Use `extip:<your-public-ip>` for most reliable setup. Other values: `(any|none|upnp|publicip|extip:<IP>|stun:<IP:PORT>)`.
+- **PORT__OP_RETH_P2P** - Port for op-reth P2P discovery. Defaults to `30303`.
 - **PORT[...]__** - Other custom ports that may be specified.
 
 ## Operating the Node
@@ -212,7 +201,7 @@ This will shut down the node and WIPE ALL DATA. Proceed with caution!
 docker compose logs -f --tail 10
 
 # Specific container
-docker compose logs op-geth -f --tail 10
+docker compose logs op-reth -f --tail 10
 docker compose logs op-node -f --tail 10
 docker compose logs eigenda-proxy -f --tail 10
 ```
@@ -243,9 +232,9 @@ And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succ
 
 ## L1 Data Migration
 
-> 💡 Most users should use snap sync (default) and skip this section. Migration is only needed for specific use cases requiring full historical verification or archive functionality.
+> ⚠️ Migrated datadirs are in geth format and cannot be used with op-reth, the execution client used by this setup. Run your node with an empty `DATADIR_PATH` instead; pre-L2 history is served via the historical-rpc-node service or `OP_RETH__HISTORICAL_RPC`. The instructions below are kept for reference.
 >
-> ⚠️ For detailed migration instructions, refer to the [official migration guide](https://docs.celo.org/cel2/operators/migrate-node). The instructions below are for reference only.
+> For detailed migration instructions, refer to the [official migration guide](https://docs.celo.org/cel2/operators/migrate-node).
 
 If you need to migrate existing Celo L1 data to L2, you have two options:
 
@@ -269,8 +258,6 @@ If you've been running a full node and wish to continue using the same datadir, 
 Where `<network>` is one of `mainnet` or `celo-sepolia` and the datadirs are the values that would be set with the `--datadir` flag in the celo-blockchain and the op-geth nodes.
 
 If the destination datadir is omitted `./envs/<network>/datadir` will be used.
-
-> ⚠️ When migrating a datadir, make sure to set `OP_GETH__SYNCMODE=full`, otherwise the node will use snap sync.
 
 #### Troubleshooting
 
@@ -333,8 +320,6 @@ Modify the `.env` file that you copied over with the following options:
 
 ```sh
 NODE_TYPE=archive
-OP_GETH__SYNCMODE=full
-DATADIR_PATH=<path to a migrated L1 full node datadir>
 
 # disable fetching blobs from cache
 EIGENDA_LOCAL_ARCHIVE_BLOBS=
