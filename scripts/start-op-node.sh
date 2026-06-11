@@ -11,7 +11,7 @@ else
   export EXTENDED_ARG="${EXTENDED_ARG:-} --network=$NETWORK_NAME --rollup.load-protocol-versions=true --rollup.halt=major"
 fi
 
-if [ -n $OP_NODE__P2P_ADVERTISE_IP ]; then
+if [ -n "$OP_NODE__P2P_ADVERTISE_IP" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --p2p.advertise.ip=$OP_NODE__P2P_ADVERTISE_IP"
 fi
 
