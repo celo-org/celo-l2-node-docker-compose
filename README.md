@@ -1,6 +1,6 @@
 # Docker Compose Setup for Running a Celo L2 Node
 
-A simple Docker Compose setup for running Celo L2 nodes with optional L1 data migration support.
+A simple Docker Compose setup for running Celo L2 nodes.
 
 > ⚠️ The instructions in this README are for illustrative purposes only. Please refer to the official [Celo Docs](https://docs.celo.org/cel2/operators/run-node) for the most up-to-date information on running Celo L2 nodes.
 
@@ -255,7 +255,7 @@ If you've been running a full node and wish to continue using the same datadir, 
 ./migrate.sh full <network> <source_L1_datadir> [dest_L2_datadir]
 ```
 
-Where `<network>` is one of `mainnet` or `celo-sepolia` and the datadirs are the values that would be set with the `--datadir` flag in the celo-blockchain and the op-geth nodes.
+Where `<network>` is one of `mainnet` or `celo-sepolia`, the source datadir is the value that would be set with the `--datadir` flag of the celo-blockchain node, and the destination datadir is written in geth format.
 
 If the destination datadir is omitted `./envs/<network>/datadir` will be used.
 
