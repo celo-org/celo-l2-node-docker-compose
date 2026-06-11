@@ -25,13 +25,3 @@ datasources:
   database: 'historical-rpc-node'
   url: 'http://influxdb:8086'
   version: 1
-- access: 'proxy'
-  editable: true
-  is_default: false
-  name: 'InfluxDB (op-geth)'
-  uid: '4knV40nVb'
-  org_id: 1
-  type: 'influxdb'
-  database: 'opgeth'
-  url: 'http://influxdb:8086'
-  version: 1

@@ -43,25 +43,24 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  op-geth:
+  op-reth:
     platform: linux/amd64
-    image: us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-geth:celo-v2.2.4
+    image: us-west1-docker.pkg.dev/devopsre/dev-images/celo-kona-reth:${IMAGE_TAG__OP_RETH:-latest}
     restart: on-failure
     stop_grace_period: 5m
-    entrypoint: /scripts/start-op-geth.sh
+    entrypoint: /scripts/start-op-reth.sh
     env_file:
-      - ./envs/${NETWORK_NAME}/op-geth.env
+      - ./envs/${NETWORK_NAME}/op-reth.env
       - .env
     volumes:
-      - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
-      - ${DATADIR_PATH}:/geth
+      - ${DATADIR_PATH}:/reth
     ports:
-      - ${PORT__OP_GETH_HTTP:-9993}:8545
-      - ${PORT__OP_GETH_WS:-9994}:8546
-      - ${PORT__OP_GETH_P2P:-39393}:${PORT__OP_GETH_P2P:-39393}/udp
-      - ${PORT__OP_GETH_P2P:-39393}:${PORT__OP_GETH_P2P:-39393}/tcp
+      - ${PORT__OP_RETH_HTTP:-9993}:8545
+      - ${PORT__OP_RETH_WS:-9994}:8546
+      - ${PORT__OP_RETH_P2P:-39393}:${PORT__OP_RETH_P2P:-39393}/udp
+      - ${PORT__OP_RETH_P2P:-39393}:${PORT__OP_RETH_P2P:-39393}/tcp
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -85,7 +84,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
-      op-geth:
+      op-reth:
         condition: service_started
 
   challenger:
@@ -101,7 +100,7 @@ services:
     environment:
       - CHALLENGER_ENABLED=${CHALLENGER__ENABLED}
       - L1_RPC=${OP_NODE__RPC_ENDPOINT}
-      - L2_RPC=http://op-geth:8545
+      - L2_RPC=http://op-reth:8545
       - PRIVATE_KEY=${CHALLENGER__PRIVATE_KEY}
       - FETCH_INTERVAL=${CHALLENGER__FETCH_INTERVAL_SECONDS:-30}
       - DISABLE_MONITOR_ONLY=${CHALLENGER__DISABLE_MONITOR_ONLY_MODE:-false}

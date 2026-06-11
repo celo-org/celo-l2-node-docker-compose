@@ -6,8 +6,8 @@ if [ "$NETWORK_NAME" != "mainnet" ]; then
   exit
 fi
 
-if [ -n "${OP_GETH__HISTORICAL_RPC}" ]; then
-  echo "Not starting historical-rpc-node, using an external historical RPC (${OP_GETH__HISTORICAL_RPC})"
+if [ -n "${OP_RETH__HISTORICAL_RPC}" ]; then
+  echo "Not starting historical-rpc-node, using an external historical RPC (${OP_RETH__HISTORICAL_RPC})"
   exit
 fi
 
