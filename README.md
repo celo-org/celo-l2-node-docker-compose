@@ -100,12 +100,13 @@ cd celo-l2-node-docker-compose
 - **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
+- **OP_RETH__SNAPSHOT_URL** - Override the snapshot downloaded on first start (see [Snapshots](#snapshots)). Defaults to `https://snapshot.celo.org/<network>/<full|archive>`. Set to empty to sync from scratch instead.
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
 ### Node Types
 
-op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only controls how much historical state is retained.
+By default a pre-synced datadir [snapshot](#snapshots) is downloaded on first start. op-reth does not support snap sync; if the snapshot is disabled, it syncs by executing every block from genesis. `NODE_TYPE` only controls how much historical state is retained.
 
 - **Full node**: prunes historical state, keeping it only for recent blocks.
 
@@ -137,6 +138,34 @@ op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only 
     ```text
     OP_RETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
+
+### Snapshots
+
+The first time you start the node, before op-reth comes up, the `op-reth-init`
+container checks the datadir. If it is empty it downloads a pre-synced datadir
+snapshot and unpacks it into `DATADIR_PATH`, so the node can start from a recent
+point instead of syncing the whole chain from scratch. On later starts the
+datadir is already populated, so this step is skipped.
+
+The snapshot is fetched from `https://snapshot.celo.org/<network>/<full|archive>`,
+chosen from `NETWORK_NAME` and `NODE_TYPE`. Full and archive nodes use different
+snapshots.
+
+- To download a snapshot from a different location, set the full URL:
+
+   ```text
+   OP_RETH__SNAPSHOT_URL=https://example.com/my-snapshot.tar.zst
+   ```
+
+- To skip the snapshot and sync from scratch, set it to empty:
+
+   ```text
+   OP_RETH__SNAPSHOT_URL=
+   ```
+
+Unpacking happens in `DATADIR_PATH`, so while it runs you need enough free space
+for both the compressed archive and the extracted datadir. If the download is
+interrupted, running `docker compose up` again resumes it.
 
 ### P2P Networking Environment Variables
 

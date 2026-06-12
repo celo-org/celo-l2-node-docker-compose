@@ -43,6 +43,23 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  # One-shot datadir initialization for op-reth. On first start (an empty
+  # datadir) it downloads a pre-synced snapshot so op-reth does not have to sync
+  # from scratch. op-reth waits for this to complete successfully before
+  # starting. Uses debian-slim because the op-reth image lacks the download and
+  # decompression tooling.
+  op-reth-init:
+    platform: linux/amd64
+    image: debian:bookworm-slim
+    restart: "no"
+    entrypoint: /scripts/init-op-reth.sh
+    env_file:
+      - ./envs/${NETWORK_NAME}/op-reth.env
+      - .env
+    volumes:
+      - ./scripts/:/scripts
+      - ${DATADIR_PATH}:/reth
+
   op-reth:
     platform: linux/amd64
     image: us-west1-docker.pkg.dev/devopsre/dev-images/celo-kona-reth:${IMAGE_TAG__OP_RETH:-latest}
@@ -63,6 +80,9 @@ services:
       - ${PORT__OP_RETH_P2P:-30303}:${PORT__OP_RETH_P2P:-30303}/tcp
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      op-reth-init:
+        condition: service_completed_successfully
 
   op-node:
     platform: linux/amd64
