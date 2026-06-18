@@ -9,7 +9,7 @@ case "$NETWORK_NAME" in
 esac
 
 # Load the rollup config from the superchain-registry by network name.
-export EXTENDED_ARG="${EXTENDED_ARG:-} --network=$CELO_NETWORK --rollup.load-protocol-versions=true --rollup.halt=major"
+export EXTENDED_ARG="${EXTENDED_ARG:-} --network=$CELO_NETWORK"
 
 if [ -n "$OP_NODE__P2P_ADVERTISE_IP" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --p2p.advertise.ip=$OP_NODE__P2P_ADVERTISE_IP"
