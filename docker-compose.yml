@@ -53,7 +53,6 @@ services:
       - ./envs/${NETWORK_NAME}/op-geth.env
       - .env
     volumes:
-      - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
       - ${DATADIR_PATH}:/geth
@@ -75,7 +74,6 @@ services:
       - ./envs/${NETWORK_NAME}/op-node.env
       - .env
     volumes:
-      - ./envs/${NETWORK_NAME}/config:/chainconfig
       - ./scripts/:/scripts
       - shared:/shared
     ports:
