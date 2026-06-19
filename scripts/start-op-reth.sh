@@ -58,6 +58,7 @@ exec celo-reth node \
   --bootnodes="$OP_RETH__BOOTNODES" \
   --port="${PORT__OP_RETH_P2P:-30303}" \
   --discovery.port="${PORT__OP_RETH_P2P:-30303}" \
+  --discovery.v5.port="${PORT__OP_RETH_P2P:-30303}" \
   --max-peers=100 \
   --nat="$OP_RETH__NAT" \
   --txpool.nolocals \
