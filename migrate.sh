@@ -2,6 +2,11 @@
 
 set -e
 
+# NOTE: This script produces a geth-format datadir, which op-reth (the
+# execution client used by this setup) cannot read. Run your node with an
+# empty DATADIR_PATH instead and serve pre-L2 history via the
+# historical-rpc-node service or OP_RETH__HISTORICAL_RPC.
+
 # Function to display usage
 usage() {
     echo "Usage: $0 <operation> <network> <source_dir> [destination_dir]"

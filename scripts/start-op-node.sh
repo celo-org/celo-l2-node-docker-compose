@@ -24,7 +24,8 @@ fi
 # Start op-node.
 exec op-node \
   --l1=$OP_NODE__RPC_ENDPOINT \
-  --l2=http://op-geth:8551 \
+  --l2=http://op-reth:8551 \
+  --l2.enginekind=reth \
   --rpc.addr=0.0.0.0 \
   --rpc.port=9545 \
   --l2.jwt-secret=/shared/jwt.txt \
