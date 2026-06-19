@@ -221,9 +221,11 @@ If monitoring is enabled (`MONITORING_ENABLED=true`), Grafana is available at [h
 Login details:
 
 - Username: `admin`
-- Password: `optimism`
+- Password: `celo`
 
 The "Simple Node Dashboard" (available at Dashboards > Manage > Simple Node Dashboard) shows basic node information and sync status.
+
+The "Celo node monitoring" dashboard (available at Dashboards > Browse > Celo node monitoring) shows op-reth and op-node health: chain/safe/finalized heads, peers, gas throughput, database size, and op-node L1/L2 derivation status.
 
 ![metrics dashboard gif](https://user-images.githubusercontent.com/14298799/171476634-0cb84efd-adbf-4732-9c1d-d737915e1fa7.gif)
 

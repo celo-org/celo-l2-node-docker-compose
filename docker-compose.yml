@@ -136,6 +136,7 @@ services:
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
       - ./docker/grafana/dashboards/simple_node_dashboard.json:/var/lib/grafana/dashboards/simple_node_dashboard.json
       - ./docker/grafana/dashboards/challenger_dashboard.json:/var/lib/grafana/dashboards/challenger_dashboard.json
+      - ./docker/grafana/dashboards/celo_node_monitoring.json:/var/lib/grafana/dashboards/celo_node_monitoring.json
       - grafana_data:/var/lib/grafana
       - ./scripts/start-grafana.sh:/scripts/start-grafana.sh
     ports:
