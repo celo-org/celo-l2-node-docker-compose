@@ -154,8 +154,8 @@ Approximate sizes (compressed download / extracted on disk):
 
 | Tier | celo-sepolia | celo-mainnet |
 | --- | --- | --- |
-| minimal | ~7 GB / ~20 GB | ~65 GB / ~120 GB |
-| full | ~11 GB / ~45 GB | ~325 GB / ~1.25 TB |
+| minimal | ~7 GB / ~20 GB | ~65 GB / ~130 GB |
+| full | ~11 GB / ~30 GB | ~215 GB / ~355 GB |
 | archive | ~13 GB / ~50 GB | ~390 GB / ~1.35 TB |
 
 ### P2P Networking Environment Variables
