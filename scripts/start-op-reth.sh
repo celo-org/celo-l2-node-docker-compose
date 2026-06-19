@@ -36,6 +36,7 @@ fi
 exec celo-reth node \
   --chain="$OP_RETH__CHAIN" \
   --datadir=/reth \
+  --storage.v2=true \
   --http \
   --http.corsdomain="*" \
   --http.addr=0.0.0.0 \
@@ -52,9 +53,9 @@ exec celo-reth node \
   --authrpc.jwtsecret=/shared/jwt.txt \
   --rollup.sequencer="$OP_RETH__SEQUENCER_URL" \
   --rollup.disable-tx-pool-gossip \
-  --min-suggested-priority-fee=2500000000 \
   --bootnodes="$OP_RETH__BOOTNODES" \
   --port="${PORT__OP_RETH_P2P:-30303}" \
+  --discovery.port="${PORT__OP_RETH_P2P:-30303}" \
   --nat="$OP_RETH__NAT" \
   --txpool.nolocals \
   --rpc.txfeecap=0 \
