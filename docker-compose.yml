@@ -45,7 +45,7 @@ services:
 
   op-reth:
     platform: linux/amd64
-    image: us-west1-docker.pkg.dev/devopsre/dev-images/celo-kona-reth:${IMAGE_TAG__OP_RETH:-latest}
+    image: ${IMAGE_REPO__OP_RETH:-us-west1-docker.pkg.dev/devopsre/celo-blockchain-public/op-reth}:${IMAGE_TAG__OP_RETH:-celo-v0.0.1-rc.1}
     restart: on-failure
     stop_grace_period: 5m
     entrypoint: /scripts/start-op-reth.sh
