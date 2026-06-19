@@ -100,7 +100,8 @@ cd celo-l2-node-docker-compose
 - **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
-- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Defaults to `false`.
+- **OP_RETH__SNAPSHOT** - When `true` (the default), bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Set to `false` to sync from genesis.
+- **OP_RETH__SNAPSHOT_MODE** - Snapshot tier for a full node: `minimal` (default) or `full`. Archive nodes (`NODE_TYPE=archive`) always download the `archive` snapshot. See [Snapshot modes](#snapshot-modes).
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
@@ -138,6 +139,24 @@ op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only 
     ```text
     OP_RETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
+
+### Snapshot modes
+
+When `OP_RETH__SNAPSHOT=true` (the default), a fresh datadir is bootstrapped from a published snapshot (`snapshots.celo.org`) instead of syncing from genesis. The tier sets how much history is included:
+
+- **minimal** - State and recent headers. Syncs to tip, validates consensus, and serves latest-state RPC (e.g. `eth_call`, `eth_getBalance` at head); limited historical RPC. Smallest and fastest.
+- **full** - Adds post-merge transactions, recent receipts, and recent state history. Suited to dApp backends and personal nodes.
+- **archive** - Complete history: all transactions, senders, receipts, and indices. For indexers and historical RPC providers.
+
+Full nodes (`NODE_TYPE=full`) select the tier via `OP_RETH__SNAPSHOT_MODE` (`minimal` default, or `full`); archive nodes (`NODE_TYPE=archive`) always download the `archive` snapshot.
+
+Approximate sizes (compressed download / extracted on disk):
+
+| Tier | celo-sepolia | celo-mainnet |
+| --- | --- | --- |
+| minimal | ~7 GB / ~20 GB | ~65 GB / ~120 GB |
+| full | ~11 GB / ~45 GB | ~325 GB / ~1.25 TB |
+| archive | ~13 GB / ~50 GB | ~390 GB / ~1.35 TB |
 
 ### P2P Networking Environment Variables
 

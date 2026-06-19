@@ -18,12 +18,14 @@ if [ -d "/reth/geth" ]; then
 fi
 
 # Bootstrap an empty datadir from a published snapshot instead of syncing from
-# scratch. Enabled with OP_RETH__SNAPSHOT=true; skipped once /reth holds data.
-# celo-reth selects the snapshots.celo.org manifest for --chain automatically
-# (celo-sepolia / mainnet), so no URL is needed.
+# scratch. On by default (OP_RETH__SNAPSHOT=true); set it to false to sync from
+# genesis. Skipped once /reth already holds data. celo-reth selects the
+# snapshots.celo.org manifest for --chain automatically (celo-sepolia / mainnet).
 if [ "$OP_RETH__SNAPSHOT" = "true" ] && [ ! -d "/reth/db" ]; then
+  # Full nodes pick a snapshot tier via OP_RETH__SNAPSHOT_MODE (minimal or full);
+  # archive nodes always need the full-history archive snapshot.
   if [ "$NODE_TYPE" = "full" ]; then
-    SNAPSHOT_PRESET="--full"
+    SNAPSHOT_PRESET="--${OP_RETH__SNAPSHOT_MODE:-minimal}"
   else
     SNAPSHOT_PRESET="--archive"
   fi
