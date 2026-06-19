@@ -17,6 +17,20 @@ if [ -d "/reth/geth" ]; then
   exit 1
 fi
 
+# Bootstrap an empty datadir from a published snapshot instead of syncing from
+# scratch. Enabled with OP_RETH__SNAPSHOT=true; skipped once /reth holds data.
+# celo-reth selects the snapshots.celo.org manifest for --chain automatically
+# (celo-sepolia / mainnet), so no URL is needed.
+if [ "$OP_RETH__SNAPSHOT" = "true" ] && [ ! -d "/reth/db" ]; then
+  if [ "$NODE_TYPE" = "full" ]; then
+    SNAPSHOT_PRESET="--full"
+  else
+    SNAPSHOT_PRESET="--archive"
+  fi
+  echo "No data in /reth; downloading ${SNAPSHOT_PRESET} snapshot for ${OP_RETH__CHAIN}..."
+  celo-reth download --datadir=/reth --chain="$OP_RETH__CHAIN" "$SNAPSHOT_PRESET"
+fi
+
 # Check if either OP_RETH__HISTORICAL_RPC or HISTORICAL_RPC_DATADIR_PATH is set and if so set the historical rpc option.
 if [ -n "$OP_RETH__HISTORICAL_RPC" ] || [ -n "$HISTORICAL_RPC_DATADIR_PATH" ] ; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --rollup.historicalrpc=${OP_RETH__HISTORICAL_RPC:-http://historical-rpc-node:8545}"
