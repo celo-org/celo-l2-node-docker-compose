@@ -32,6 +32,8 @@ if [ "$NODE_TYPE" = "full" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --full"
 fi
 
+# Operators forwarding logs to an aggregator can switch to structured output
+# by adding --log.stdout.format=json to the command below.
 # Start op-reth.
 exec celo-reth node \
   --chain="$OP_RETH__CHAIN" \
@@ -56,6 +58,7 @@ exec celo-reth node \
   --bootnodes="$OP_RETH__BOOTNODES" \
   --port="${PORT__OP_RETH_P2P:-30303}" \
   --discovery.port="${PORT__OP_RETH_P2P:-30303}" \
+  --max-peers=100 \
   --nat="$OP_RETH__NAT" \
   --txpool.nolocals \
   --rpc.txfeecap=0 \
