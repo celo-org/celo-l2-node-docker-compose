@@ -25,8 +25,11 @@ if [ "$OP_RETH__SNAPSHOT" = "true" ] && [ ! -d "/reth/db" ]; then
   # Full nodes pick a snapshot tier via OP_RETH__SNAPSHOT_MODE (minimal or full);
   # archive nodes always need the full-history archive snapshot.
   if [ "$NODE_TYPE" = "full" ]; then
-    SNAPSHOT_PRESET="--${OP_RETH__SNAPSHOT_MODE:-minimal}"
+    # A full node can seed from the minimal or full snapshot tier; default full.
+    # ponytail: no validation of the value — celo-reth rejects a bad --<tier>.
+    SNAPSHOT_PRESET="--${OP_RETH__SNAPSHOT_MODE:-full}"
   else
+    # Archive nodes must seed from the archive snapshot.
     SNAPSHOT_PRESET="--archive"
   fi
   echo "No data in /reth; downloading ${SNAPSHOT_PRESET} snapshot for ${OP_RETH__CHAIN}..."

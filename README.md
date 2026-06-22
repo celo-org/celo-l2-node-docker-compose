@@ -100,8 +100,8 @@ cd celo-l2-node-docker-compose
 - **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
-- **OP_RETH__SNAPSHOT** - When `true` (the default), bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Set to `false` to sync from genesis.
-- **OP_RETH__SNAPSHOT_MODE** - Snapshot tier for a full node: `minimal` (default) or `full`. Archive nodes (`NODE_TYPE=archive`) always download the `archive` snapshot. See [Snapshot modes](#snapshot-modes).
+- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Defaults to `false`.
+- **OP_RETH__SNAPSHOT_MODE** - Snapshot tier to download when `OP_RETH__SNAPSHOT=true` and `NODE_TYPE=full`: `minimal` (smallest) or `full`. Defaults to `full`. Ignored for archive nodes, which always use the archive snapshot. Only affects the initial download, not how op-reth runs (that is set by `NODE_TYPE`).
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
