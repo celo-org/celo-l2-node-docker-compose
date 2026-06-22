@@ -22,16 +22,10 @@ fi
 # genesis. Skipped once /reth already holds data. celo-reth selects the
 # snapshots.celo.org manifest for --chain automatically (celo-sepolia / mainnet).
 if [ "$OP_RETH__SNAPSHOT" = "true" ] && [ ! -d "/reth/db" ]; then
-  # Full nodes pick a snapshot tier via OP_RETH__SNAPSHOT_MODE (minimal or full);
-  # archive nodes always need the full-history archive snapshot.
-  if [ "$NODE_TYPE" = "full" ]; then
-    # A full node can seed from the minimal or full snapshot tier; default full.
-    # ponytail: no validation of the value — celo-reth rejects a bad --<tier>.
-    SNAPSHOT_PRESET="--${OP_RETH__SNAPSHOT_MODE:-full}"
-  else
-    # Archive nodes must seed from the archive snapshot.
-    SNAPSHOT_PRESET="--archive"
-  fi
+  # NODE_TYPE doubles as the snapshot tier, matching celo-reth's download
+  # presets: minimal | full | archive. Defaults to full.
+  # ponytail: no validation of the value — celo-reth rejects a bad --<tier>.
+  SNAPSHOT_PRESET="--${NODE_TYPE:-full}"
   echo "No data in /reth; downloading ${SNAPSHOT_PRESET} snapshot for ${OP_RETH__CHAIN}..."
   celo-reth download --datadir=/reth --chain="$OP_RETH__CHAIN" "$SNAPSHOT_PRESET"
 fi
@@ -46,8 +40,9 @@ if [ -n "$OP_RETH__TRUSTED_PEERS" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --trusted-peers=$OP_RETH__TRUSTED_PEERS"
 fi
 
-# A full node prunes historical state, an archive node keeps all of it.
-if [ "$NODE_TYPE" = "full" ]; then
+# minimal and full both run as pruned full nodes (--full); only an archive node
+# keeps all historical state.
+if [ "$NODE_TYPE" != "archive" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --full"
 fi
 

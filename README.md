@@ -86,9 +86,10 @@ cd celo-l2-node-docker-compose
 
 ### Key Environment Variables
 
-- **NODE_TYPE**
-  - `full` - A full node stores historical state only for recent blocks.
-  - `archive` - An archive node stores historical state for the entire history of the blockchain.
+- **NODE_TYPE** - The node tier, which sets both the snapshot download size and the prune mode. One of `minimal`, `full`, or `archive` (see [Snapshot modes](#snapshot-modes)):
+  - `minimal` - Pruned full node bootstrapped from the smallest snapshot. Smallest and fastest.
+  - `full` - Pruned full node with more bootstrap history. Default.
+  - `archive` - Stores historical state for the entire history of the blockchain.
 - **OP_NODE__RPC_ENDPOINT** - Layer 1 RPC endpoint (e.g., Ethereum mainnet). For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__L1_BEACON** - Layer 1 beacon endpoint. For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__RPC_TYPE** - Service provider type for the L1 RPC endpoint:
@@ -100,14 +101,19 @@ cd celo-l2-node-docker-compose
 - **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
-- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Defaults to `false`.
-- **OP_RETH__SNAPSHOT_MODE** - Snapshot tier to download when `OP_RETH__SNAPSHOT=true` and `NODE_TYPE=full`: `minimal` (smallest) or `full`. Defaults to `full`. Ignored for archive nodes, which always use the archive snapshot. Only affects the initial download, not how op-reth runs (that is set by `NODE_TYPE`).
+- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. The tier downloaded is set by `NODE_TYPE`. Skipped once the datadir already contains data.
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
 ### Node Types
 
-op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only controls how much historical state is retained.
+op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` selects the snapshot tier (see [Snapshot modes](#snapshot-modes)) and, for `archive`, whether full historical state is retained.
+
+- **Minimal node**: a full (pruned) node bootstrapped from the smallest snapshot — same runtime behavior as a full node, just a faster initial sync.
+
+   ```text
+   NODE_TYPE=minimal
+   ```
 
 - **Full node**: prunes historical state, keeping it only for recent blocks.
 
@@ -148,7 +154,7 @@ When `OP_RETH__SNAPSHOT=true` (the default), a fresh datadir is bootstrapped fro
 - **full** - Adds post-merge transactions, recent receipts, and recent state history. Suited to dApp backends and personal nodes.
 - **archive** - Complete history: all transactions, senders, receipts, and indices. For indexers and historical RPC providers.
 
-Full nodes (`NODE_TYPE=full`) select the tier via `OP_RETH__SNAPSHOT_MODE` (`minimal` default, or `full`); archive nodes (`NODE_TYPE=archive`) always download the `archive` snapshot.
+`NODE_TYPE` selects the tier directly — `minimal`, `full`, or `archive`. `minimal` and `full` both run as pruned full nodes (they differ only in how much history the snapshot seeds); `archive` keeps complete history.
 
 Approximate sizes (compressed download / extracted on disk):
 
