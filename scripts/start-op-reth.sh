@@ -40,10 +40,10 @@ if [ -n "$OP_RETH__TRUSTED_PEERS" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --trusted-peers=$OP_RETH__TRUSTED_PEERS"
 fi
 
-# minimal and full both run as pruned full nodes (--full); only an archive node
-# keeps all historical state.
+# NODE_TYPE also selects reth's prune profile: --minimal (most aggressive) or
+# --full. An archive node passes no flag and retains all historical state.
 if [ "$NODE_TYPE" != "archive" ]; then
-  export EXTENDED_ARG="${EXTENDED_ARG:-} --full"
+  export EXTENDED_ARG="${EXTENDED_ARG:-} --${NODE_TYPE:-full}"
 fi
 
 # Operators forwarding logs to an aggregator can switch to structured output

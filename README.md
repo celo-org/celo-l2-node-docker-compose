@@ -87,8 +87,8 @@ cd celo-l2-node-docker-compose
 ### Key Environment Variables
 
 - **NODE_TYPE** - The node tier, which sets both the snapshot download size and the prune mode. One of `minimal`, `full`, or `archive` (see [Snapshot modes](#snapshot-modes)):
-  - `minimal` - Pruned full node bootstrapped from the smallest snapshot. Smallest and fastest.
-  - `full` - Pruned full node with more bootstrap history. Default.
+  - `minimal` - Runs reth's most aggressive prune profile (`--minimal`): prunes transaction lookups fully and keeps only ~64 blocks of receipts. Smallest disk, limited historical RPC.
+  - `full` - Runs reth's standard full-node prune profile (`--full`): retains ~10,064 blocks of history. Default.
   - `archive` - Stores historical state for the entire history of the blockchain.
 - **OP_NODE__RPC_ENDPOINT** - Layer 1 RPC endpoint (e.g., Ethereum mainnet). For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__L1_BEACON** - Layer 1 beacon endpoint. For reliability, use paid plans or self-hosted nodes.
@@ -109,7 +109,7 @@ cd celo-l2-node-docker-compose
 
 op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` selects the snapshot tier (see [Snapshot modes](#snapshot-modes)) and, for `archive`, whether full historical state is retained.
 
-- **Minimal node**: a full (pruned) node bootstrapped from the smallest snapshot — same runtime behavior as a full node, just a faster initial sync.
+- **Minimal node**: runs reth's most aggressive prune profile (`--minimal`) — prunes transaction lookups fully and keeps only the most recent receipts. Smallest disk footprint; serves latest-state RPC but limited historical RPC.
 
    ```text
    NODE_TYPE=minimal
@@ -154,7 +154,7 @@ When `OP_RETH__SNAPSHOT=true` (the default), a fresh datadir is bootstrapped fro
 - **full** - Adds post-merge transactions, recent receipts, and recent state history. Suited to dApp backends and personal nodes.
 - **archive** - Complete history: all transactions, senders, receipts, and indices. For indexers and historical RPC providers.
 
-`NODE_TYPE` selects the tier directly — `minimal`, `full`, or `archive`. `minimal` and `full` both run as pruned full nodes (they differ only in how much history the snapshot seeds); `archive` keeps complete history.
+`NODE_TYPE` selects the tier directly — `minimal`, `full`, or `archive` — and maps to reth's matching node run mode: `--minimal` (most aggressive pruning), `--full` (standard full-node pruning), or archive (no pruning, keeps complete history).
 
 Approximate sizes (compressed download / extracted on disk):
 
