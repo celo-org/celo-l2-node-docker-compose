@@ -18,15 +18,14 @@ if [ -d "/reth/geth" ]; then
 fi
 
 # Bootstrap an empty datadir from a published snapshot instead of syncing from
-# scratch. Enabled with OP_RETH__SNAPSHOT=true; skipped once /reth holds data.
-# celo-reth selects the snapshots.celo.org manifest for --chain automatically
-# (celo-sepolia / mainnet), so no URL is needed.
+# scratch. On by default (OP_RETH__SNAPSHOT=true); set it to false to sync from
+# genesis. Skipped once /reth already holds data. celo-reth selects the
+# snapshots.celo.org manifest for --chain automatically (celo-sepolia / mainnet).
 if [ "$OP_RETH__SNAPSHOT" = "true" ] && [ ! -d "/reth/db" ]; then
-  if [ "$NODE_TYPE" = "full" ]; then
-    SNAPSHOT_PRESET="--full"
-  else
-    SNAPSHOT_PRESET="--archive"
-  fi
+  # NODE_TYPE doubles as the snapshot tier, matching celo-reth's download
+  # presets: minimal | full | archive. Defaults to full.
+  # ponytail: no validation of the value — celo-reth rejects a bad --<tier>.
+  SNAPSHOT_PRESET="--${NODE_TYPE:-full}"
   echo "No data in /reth; downloading ${SNAPSHOT_PRESET} snapshot for ${OP_RETH__CHAIN}..."
   celo-reth download --datadir=/reth --chain="$OP_RETH__CHAIN" "$SNAPSHOT_PRESET"
 fi
@@ -41,9 +40,10 @@ if [ -n "$OP_RETH__TRUSTED_PEERS" ]; then
   export EXTENDED_ARG="${EXTENDED_ARG:-} --trusted-peers=$OP_RETH__TRUSTED_PEERS"
 fi
 
-# A full node prunes historical state, an archive node keeps all of it.
-if [ "$NODE_TYPE" = "full" ]; then
-  export EXTENDED_ARG="${EXTENDED_ARG:-} --full"
+# NODE_TYPE also selects reth's prune profile: --minimal (most aggressive) or
+# --full. An archive node passes no flag and retains all historical state.
+if [ "$NODE_TYPE" != "archive" ]; then
+  export EXTENDED_ARG="${EXTENDED_ARG:-} --${NODE_TYPE:-full}"
 fi
 
 # Operators forwarding logs to an aggregator can switch to structured output

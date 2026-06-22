@@ -86,9 +86,10 @@ cd celo-l2-node-docker-compose
 
 ### Key Environment Variables
 
-- **NODE_TYPE**
-  - `full` - A full node stores historical state only for recent blocks.
-  - `archive` - An archive node stores historical state for the entire history of the blockchain.
+- **NODE_TYPE** - The node tier, which sets both the snapshot download size and the prune mode. One of `minimal`, `full`, or `archive` (see [Snapshot modes](#snapshot-modes)):
+  - `minimal` - Runs reth's most aggressive prune profile (`--minimal`): prunes transaction lookups fully and keeps only ~64 blocks of receipts. Smallest disk, limited historical RPC.
+  - `full` - Runs reth's standard full-node prune profile (`--full`): retains ~10,064 blocks of history. Default.
+  - `archive` - Stores historical state for the entire history of the blockchain.
 - **OP_NODE__RPC_ENDPOINT** - Layer 1 RPC endpoint (e.g., Ethereum mainnet). For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__L1_BEACON** - Layer 1 beacon endpoint. For reliability, use paid plans or self-hosted nodes.
 - **OP_NODE__RPC_TYPE** - Service provider type for the L1 RPC endpoint:
@@ -100,13 +101,19 @@ cd celo-l2-node-docker-compose
 - **HISTORICAL_RPC_DATADIR_PATH** - Datadir path to use for legacy archive node to serve pre-L2 historical state. If set, a Celo L1 node will be run in archive mode to serve requests requiring state for blocks prior to the L2 migration and op-reth will be configured to proxy those requests to the Celo L1 node.
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
-- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. Skipped once the datadir already contains data. Defaults to `false`.
+- **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. The tier downloaded is set by `NODE_TYPE`. Skipped once the datadir already contains data.
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
 ### Node Types
 
-op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only controls how much historical state is retained.
+op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` selects the snapshot tier (see [Snapshot modes](#snapshot-modes)) and, for `archive`, whether full historical state is retained.
+
+- **Minimal node**: runs reth's most aggressive prune profile (`--minimal`) — prunes transaction lookups fully and keeps only the most recent receipts. Smallest disk footprint; serves latest-state RPC but limited historical RPC.
+
+   ```text
+   NODE_TYPE=minimal
+   ```
 
 - **Full node**: prunes historical state, keeping it only for recent blocks.
 
@@ -138,6 +145,24 @@ op-reth syncs by executing every block, there is no snap sync. `NODE_TYPE` only 
     ```text
     OP_RETH__HISTORICAL_RPC=<historical rpc node endpoint>
     ```
+
+### Snapshot modes
+
+When `OP_RETH__SNAPSHOT=true` (the default), a fresh datadir is bootstrapped from a published snapshot (`snapshots.celo.org`) instead of syncing from genesis. The tier sets how much history is included:
+
+- **minimal** - State and recent headers. Syncs to tip, validates consensus, and serves latest-state RPC (e.g. `eth_call`, `eth_getBalance` at head); limited historical RPC. Smallest and fastest.
+- **full** - Adds post-merge transactions, recent receipts, and recent state history. Suited to dApp backends and personal nodes.
+- **archive** - Complete history: all transactions, senders, receipts, and indices. For indexers and historical RPC providers.
+
+`NODE_TYPE` selects the tier directly — `minimal`, `full`, or `archive` — and maps to reth's matching node run mode: `--minimal` (most aggressive pruning), `--full` (standard full-node pruning), or archive (no pruning, keeps complete history).
+
+Approximate sizes (compressed download / extracted on disk):
+
+| Tier | celo-sepolia | celo-mainnet |
+| --- | --- | --- |
+| minimal | ~7 GB / ~20 GB | ~65 GB / ~130 GB |
+| full | ~11 GB / ~30 GB | ~215 GB / ~355 GB |
+| archive | ~13 GB / ~50 GB | ~390 GB / ~1.35 TB |
 
 ### P2P Networking Environment Variables
 
@@ -221,9 +246,11 @@ If monitoring is enabled (`MONITORING_ENABLED=true`), Grafana is available at [h
 Login details:
 
 - Username: `admin`
-- Password: `optimism`
+- Password: `celo`
 
 The "Simple Node Dashboard" (available at Dashboards > Manage > Simple Node Dashboard) shows basic node information and sync status.
+
+The "Celo node monitoring" dashboard (available at Dashboards > Browse > Celo node monitoring) shows op-reth and op-node health: chain/safe/finalized heads, peers, gas throughput, database size, and op-node L1/L2 derivation status.
 
 ![metrics dashboard gif](https://user-images.githubusercontent.com/14298799/171476634-0cb84efd-adbf-4732-9c1d-d737915e1fa7.gif)
 

@@ -22,3 +22,7 @@ scrape_configs:
   - job_name: "challenger"
     static_configs:
       - targets: ["challenger:7300"]
+
+  - job_name: "eigenda-proxy"
+    static_configs:
+      - targets: ["eigenda-proxy:7300"]
