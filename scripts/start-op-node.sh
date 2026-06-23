@@ -21,6 +21,19 @@ if [ -z "$OP_NODE_ALTDA_DA_SERVER" ]; then
   OP_NODE_ALTDA_DA_SERVER="http://eigenda-proxy:4242"
 fi
 
+# Wait for the op-reth engine API before starting op-node. op-reth only binds
+# port 8551 once `celo-reth node` is running, which is after any OP_RETH__SNAPSHOT
+# download/import finishes (can take a long time on mainnet or a slow link).
+# Without this, op-node exits after its ~10 internal connection retries and
+# crash-loops until op-reth is ready. No timeout here on purpose: op-node waits
+# as long as the snapshot takes and then starts, so the node always comes up on
+# its own without operator intervention.
+echo "Waiting for op-reth engine API (op-reth:8551)..."
+while ! nc -z -w 3 op-reth 8551 2>/dev/null; do
+  sleep 5
+done
+echo "op-reth engine is reachable; starting op-node."
+
 # Start op-node.
 exec op-node \
   --l1=$OP_NODE__RPC_ENDPOINT \
