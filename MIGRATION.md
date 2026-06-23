@@ -2,13 +2,13 @@
 
 > ⚠️ Migrated datadirs are in geth format and cannot be used with op-reth, the execution client used by this setup. Run your node with an empty `DATADIR_PATH` instead; pre-L2 history is served via the historical-rpc-node service or `OP_RETH__HISTORICAL_RPC`. The instructions below are kept for reference.
 >
-> For detailed migration instructions, refer to the [official migration guide](https://docs.celo.org/cel2/operators/migrate-node).
+> For detailed migration instructions, refer to the [official migration guide](https://docs.celo.org/infra-partners/operators/migrate-node).
 
 If you need to migrate existing Celo L1 data to L2, you have two options:
 
 ## Option 1: Download Pre-Migrated Data
 
-Download migrated datadirs from the official sources listed in the [Celo Docs](https://docs.celo.org/cel2/operators/migrate-node).
+Download migrated datadirs from the official sources listed in the [Celo Docs](https://docs.celo.org/infra-partners/operators/migrate-node).
 
 ## Option 2: Migrate Your Own Data
 
