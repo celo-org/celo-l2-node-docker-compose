@@ -23,7 +23,7 @@ If you've been running a full node and wish to continue using the same datadir, 
 ./migrate.sh full <network> <source_L1_datadir> [dest_L2_datadir]
 ```
 
-Where `<network>` is one of `mainnet` or `celo-sepolia`, the source datadir is the value that would be set with the `--datadir` flag of the celo-blockchain node, and the destination datadir is written in geth format.
+Where `<network>` is `mainnet`, the source datadir is the value that would be set with the `--datadir` flag of the celo-blockchain node, and the destination datadir is written in geth format.
 
 If the destination datadir is omitted `./envs/<network>/datadir` will be used.
 
