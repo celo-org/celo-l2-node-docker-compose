@@ -8,44 +8,12 @@ A simple Docker Compose setup for running Celo L2 nodes.
 
 ### Install Docker and Docker Compose
 
-**Ubuntu/Linux:**
+- **Linux:** Follow [Docker's official install guide](https://docs.docker.com/engine/install/). To run Docker without `sudo`, also complete the [Linux post-install steps](https://docs.docker.com/engine/install/linux-postinstall/).
+- **macOS / Windows:** Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
-```sh
-# Update and upgrade packages
-sudo apt-get update && sudo apt-get upgrade -y
+Docker Compose v2 is included with all of the above; verify with `docker compose version`.
 
-# Install prerequisites
-sudo apt-get install -y curl gnupg ca-certificates lsb-release
-
-#  Download the Docker GPG file to Ubuntu
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-# Add Docker and Docker Compose support to Ubuntu's packages list
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-# Install Docker and Docker Compose
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-sudo usermod -aG docker $(whoami)
-
-# Verify installation
-sudo docker run hello-world
-```
-
-> _For non-root users_:
-> Log out and log back in after the installation to complete the setup. Test with:
->
-> ```sh
-> docker ps
-> ```
->
-> It should return an empty list without errors. If an error is returned, restart your machine.
-
-**macOS:** Use [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-You may need to increase the virtual disk limit in Docker Desktop settings to accommodate the chaindata directory.This can be done by opening Docker Desktop, going to Settings -> Resources -> Advanced and increasing the disk image size.
-
-**Windows:** Use [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+> On macOS, you may need to raise Docker Desktop's virtual disk limit to fit the chaindata directory: Settings → Resources → Advanced → Disk image size.
 
 ### Clone the Repository
 
