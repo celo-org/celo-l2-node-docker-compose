@@ -2,50 +2,16 @@
 
 A simple Docker Compose setup for running Celo L2 nodes.
 
-> ⚠️ The instructions in this README are for illustrative purposes only. Please refer to the official [Celo Docs](https://docs.celo.org/cel2/operators/run-node) for the most up-to-date information on running Celo L2 nodes.
-
 ## Installation and Configuration
 
 ### Install Docker and Docker Compose
 
-**Ubuntu/Linux:**
+- **Linux:** Follow [Docker's official install guide](https://docs.docker.com/engine/install/). To run Docker without `sudo`, also complete the [Linux post-install steps](https://docs.docker.com/engine/install/linux-postinstall/).
+- **macOS / Windows:** Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
-```sh
-# Update and upgrade packages
-sudo apt-get update && sudo apt-get upgrade -y
+Docker Compose v2 is included with all of the above; verify with `docker compose version`.
 
-# Install prerequisites
-sudo apt-get install -y curl gnupg ca-certificates lsb-release
-
-#  Download the Docker GPG file to Ubuntu
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-# Add Docker and Docker Compose support to Ubuntu's packages list
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-# Install Docker and Docker Compose
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-sudo usermod -aG docker $(whoami)
-
-# Verify installation
-sudo docker run hello-world
-```
-
-> _For non-root users_:
-> Log out and log back in after the installation to complete the setup. Test with:
->
-> ```sh
-> docker ps
-> ```
->
-> It should return an empty list without errors. If an error is returned, restart your machine.
-
-**macOS:** Use [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-You may need to increase the virtual disk limit in Docker Desktop settings to accommodate the chaindata directory.This can be done by opening Docker Desktop, going to Settings -> Resources -> Advanced and increasing the disk image size.
-
-**Windows:** Use [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+> On macOS, you may need to raise Docker Desktop's virtual disk limit to fit the chaindata directory: Settings → Resources → Advanced → Disk image size.
 
 ### Clone the Repository
 
@@ -260,51 +226,7 @@ And the "Succinct Challenger" dashboard (available at Dashboards > Browse > Succ
 
 ## L1 Data Migration
 
-> ⚠️ Migrated datadirs are in geth format and cannot be used with op-reth, the execution client used by this setup. Run your node with an empty `DATADIR_PATH` instead; pre-L2 history is served via the historical-rpc-node service or `OP_RETH__HISTORICAL_RPC`. The instructions below are kept for reference.
->
-> For detailed migration instructions, refer to the [official migration guide](https://docs.celo.org/cel2/operators/migrate-node).
-
-If you need to migrate existing Celo L1 data to L2, you have two options:
-
-### Option 1: Download Pre-Migrated Data
-
-Download migrated datadirs from the official sources listed in the [Celo Docs](https://docs.celo.org/cel2/operators/migrate-node).
-
-### Option 2: Migrate Your Own Data
-
-> ⚠️ IMPORTANT
->
-> - Make sure your node is stopped before running the migration.
-> - You should not attempt to migrate archive node data, only full node data.
-
-If you've been running a full node and wish to continue using the same datadir, you can migrate the data as follows:
-
-```sh
-./migrate.sh full <network> <source_L1_datadir> [dest_L2_datadir]
-```
-
-Where `<network>` is one of `mainnet` or `celo-sepolia`, the source datadir is the value that would be set with the `--datadir` flag of the celo-blockchain node, and the destination datadir is written in geth format.
-
-If the destination datadir is omitted `./envs/<network>/datadir` will be used.
-
-#### Troubleshooting
-
-If you encounter this error during migration...
-
-```log
-CRIT [03-19|10:38:17.229] error in celo-migrate err="failed to run full migration: failed to get head header: failed to open database at \"/datadir/celo/chaindata\" err: failed to open leveldb: EOF"
-```
-
-...start up the celo-blockchain client with the same datadir, wait for it to fully load, then shut it down. This repairs inconsistent shutdown states.
-
-Alternatively, open a console and exit:
-
-```sh
-geth console --datadir <datadir>
-# Wait for console to load, then exit
-```
-
-It seems that this issue is caused by the celo-blockchain client sometimes shutting down in an inconsistent state, which is repaired upon the next startup.
+Migrated datadirs are in geth format and cannot be used with op-reth, so this setup runs from an empty datadir and serves pre-L2 history via the historical-rpc-node service or `OP_RETH__HISTORICAL_RPC`. If you still need to migrate existing Celo L1 data, see the separate [L1 Data Migration guide](MIGRATION.md).
 
 ## Running a challenger
 

@@ -11,7 +11,7 @@ set -e
 usage() {
     echo "Usage: $0 <operation> <network> <source_dir> [destination_dir]"
     echo "  <operation>       Either pre or full"
-    echo "  <network>         Network name (mainnet, celo-sepolia)"
+    echo "  <network>         Network name (mainnet)"
     echo "  <source_dir>      Source datadir directory (the value of the '--datadir' flag for the celo L1 client)"
     echo "  [destination_dir] Optional destination datadir directory (should be used as the value for the '--datadir'"
     echo "                    flag for the celo L2 client), if omitted './envs/<network>/datadir' will be used"
