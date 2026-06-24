@@ -2,8 +2,6 @@
 
 A simple Docker Compose setup for running Celo L2 nodes.
 
-> ⚠️ The instructions in this README are for illustrative purposes only. Please refer to the official [Celo Docs](https://docs.celo.org/cel2/operators/run-node) for the most up-to-date information on running Celo L2 nodes.
-
 ## Installation and Configuration
 
 ### Install Docker and Docker Compose
