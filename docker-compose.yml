@@ -56,6 +56,7 @@ services:
       - ./scripts/:/scripts
       - shared:/shared
       - ${DATADIR_PATH}:/reth
+      - ${PROOFS_HISTORY_DATADIR_PATH:-./proofs}:/proofs
     ports:
       - ${PORT__OP_RETH_HTTP:-9993}:8545
       - ${PORT__OP_RETH_WS:-9994}:8546

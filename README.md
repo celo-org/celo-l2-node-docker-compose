@@ -68,6 +68,9 @@ cd celo-l2-node-docker-compose
 - **OP_RETH__HISTORICAL_RPC** - RPC Endpoint for fetching pre-L2 historical state. If set, op-reth will proxy requests requiring state prior to the L2 hardfork there. If set, this overrides the use of a local Celo L1 node via **HISTORICAL_RPC_DATADIR_PATH**, which means that no local Celo L1 node will be run.
 - **DATADIR_PATH** - Use a custom datadir instead of the default at `./envs/<network>/datadir`. Must be empty on first start; datadirs written by op-geth cannot be reused.
 - **OP_RETH__SNAPSHOT** - When `true`, bootstrap an empty datadir from a published snapshot (`snapshots.celo.org`) instead of syncing from scratch. The tier downloaded is set by `NODE_TYPE`. Skipped once the datadir already contains data.
+- **OP_RETH__PROOFS_HISTORY_ENABLED** - Set to `true` to serve deep `eth_getProof` within a bounded window from a sidecar DB, avoiding reth's slow, OOM-prone historical reverts (see [Historical proofs](#historical-proofs)). Off by default.
+- **OP_RETH__PROOFS_HISTORY_WINDOW** - Number of recent blocks to keep proofs for. Defaults to `1296000` (~15 days at 1s blocks).
+- **PROOFS_HISTORY_DATADIR_PATH** - Where the proofs-history database is stored. Keep it on a separate volume from the chaindata datadir. Defaults to `./envs/<network>/proofs`.
 - **IMAGE_TAG[...]__** - Use a custom Docker image for specified components.
 - **MONITORING_ENABLED** - Enables the following services when set to `true`: `healthcheck`, `prometheus`, `grafana`, `influxdb`.
 
@@ -129,6 +132,51 @@ Approximate sizes (compressed download / extracted on disk):
 | minimal | ~7 GB / ~20 GB | ~65 GB / ~130 GB |
 | full | ~11 GB / ~30 GB | ~215 GB / ~355 GB |
 | archive | ~13 GB / ~50 GB | ~390 GB / ~1.35 TB |
+
+### Historical proofs
+
+Serving `eth_getProof` for an older block normally forces reth to rebuild that
+block's state by reverting diffs backward from the chain tip, which is slow at
+depth and can OOM-crash the node, even on an archive node. Historical proofs add
+a bounded-window sidecar that answers deep `eth_getProof` from precomputed,
+versioned trie nodes instead: fast and crash-free, for about the last 15 days by
+default. It is an opt-in op-reth sidecar, off by default. Enable it in your
+`.env`:
+
+```text
+OP_RETH__PROOFS_HISTORY_ENABLED=true
+```
+
+When enabled, op-reth initializes the proofs storage **once**, before it starts
+following the chain, by anchoring it at the datadir's current head. It then
+fills proofs forward up to `OP_RETH__PROOFS_HISTORY_WINDOW` blocks. Proofs are
+recorded forward only: the window grows from the anchor onward and cannot be
+backfilled to earlier blocks.
+
+> ⚠️ The proofs storage must be anchored on a datadir that has synced past its
+> genesis block. Anchoring at genesis wedges the node with repeated
+> `StateRootMismatch` errors, so startup refuses it: if the datadir is still at
+> genesis, op-reth skips initialization, logs a warning, and starts without
+> proofs.
+
+This leaves three cases:
+
+- **Bootstrapped from a snapshot (`OP_RETH__SNAPSHOT=true`, the default):** the
+  datadir is already synced, so proofs are initialized automatically on the
+  first start.
+- **An existing synced datadir:** point `DATADIR_PATH` at it and enable proofs;
+  the storage is initialized on the next start.
+- **Syncing from scratch (`OP_RETH__SNAPSHOT=false`):** the first start has
+  nothing to anchor, so proofs are skipped with a warning and op-reth syncs
+  without them. Once it has synced, restart (`docker compose up -d`) to
+  initialize proofs against the synced datadir.
+
+The proofs database lives on a separate volume (`PROOFS_HISTORY_DATADIR_PATH`,
+default `./envs/<network>/proofs`). It is sized by the window (not the node
+tier) and can use significant disk, so plan capacity accordingly.
+
+See the [historical proofs operator guide](https://docs.celo.org/infra-partners/operators/historical-proofs)
+for window sizing, querying, and verification details.
 
 ### P2P Networking Environment Variables
 
@@ -262,7 +310,7 @@ In order to ensure the ability to fully derive the L2 state from consensus L1 da
 
 ## Installation and Configuration
 
-Refer to the [previous instructions](#installation-and-configuration) and the [Celo Docs](https://docs.celo.org/cel2/operators/run-node) on how to run a node and configure it as an archive node.
+Refer to the [previous instructions](#installation-and-configuration) and the [Celo Docs](https://docs.celo.org/infra-partners/operators/run-node) on how to run a node and configure it as an archive node.
 
 ### Required steps
 
