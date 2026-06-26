@@ -1,0 +1,19 @@
+services:
+  op-geth:
+    image: ${IMAGE_TAG__CELO_RETH:?IMAGE_TAG__CELO_RETH is required}
+    # pull_policy: never  # Uncomment for local images
+    # platform: ""        # Uncomment to clear linux/amd64 for local images
+    entrypoint: /scripts/start-celo-reth.sh
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8545'"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    ports:
+      - "9200:9200/udp"
+
+  op-node:
+    depends_on:
+      op-geth:
+        condition: service_healthy
