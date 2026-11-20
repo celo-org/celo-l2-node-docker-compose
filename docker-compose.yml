@@ -101,11 +101,16 @@ services:
       - CHALLENGER_ENABLED=${CHALLENGER__ENABLED}
       - L1_RPC=${OP_NODE__RPC_ENDPOINT}
       - L2_RPC=http://op-reth:8545
+      - L2_NODE_RPC=http://op-node:9545
       - PRIVATE_KEY=${CHALLENGER__PRIVATE_KEY}
       - FETCH_INTERVAL=${CHALLENGER__FETCH_INTERVAL_SECONDS:-30}
+      - SYNC_L1_CONFIRMATIONS=${CHALLENGER__SYNC_L1_CONFIRMATIONS:-5}
       - DISABLE_MONITOR_ONLY=${CHALLENGER__DISABLE_MONITOR_ONLY_MODE:-false}
       - TX_CONFIRMATION_TIMEOUT=${CHALLENGER__TX_CONFIRMATION_TIMEOUT_SECONDS:-180}
       - CHALLENGER_METRICS_PORT=7300
+    depends_on:
+      op-node:
+        condition: service_started
     expose: # only informative
       - "7300" # metrics
     extra_hosts:
