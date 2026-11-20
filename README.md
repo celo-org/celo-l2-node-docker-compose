@@ -298,6 +298,7 @@ In order to ensure the ability to fully derive the L2 state from consensus L1 da
   - full sync recommended
 - Celo (L2) consensus node
   - consensus node with alt-da derivation
+  - SafeDB enabled, with history covering the active challenge window
   - execution-sync
   - (consensus-sync for advanced trust assumptions, setup not supported in this configuration)
 - eigenda-proxy
@@ -325,6 +326,10 @@ EIGENDA_LOCAL_ARCHIVE_BLOBS=
 CHALLENGER__ENABLED=true
 ```
 
+The challenger uses the paired local endpoints `L2_NODE_RPC=http://op-node:9545` and `L2_RPC=http://op-reth:8545`. The op-node starts with `--safedb.path=/shared/safedb`, storing SafeDB in the existing `shared` volume.
+
+SafeDB needs to accumulate history covering the active challenge window. Enabling it on an already-synced node does not backfill that history. Execution-layer sync can clear SafeDB, so coverage needs to build up again after such a reset. Games with missing history remain unavailable and are retried.
+
 ### Optional changes
 
 ```sh
@@ -334,13 +339,16 @@ CHALLENGER__ENABLED=true
 # Conversely, lowering this value increases the probability of successfully submitting a challenge, but also increases load on the L1 node.
 CHALLENGER__FETCH_INTERVAL_SECONDS=120
 
+# Number of L1 confirmations used for the challenger's state reads (default 5).
+CHALLENGER__SYNC_L1_CONFIRMATIONS=5
+
 # Maximum time (seconds) the challenger waits for an L1 transaction (e.g. a `challenge()` call) to be confirmed.
 # Raise this if your L1 RPC is slow or commonly under load.
 CHALLENGER__TX_CONFIRMATION_TIMEOUT_SECONDS=180
 
 # Use a specific version of the challenger image
 # See https://github.com/celo-org/op-succinct/releases for the latest releases
-IMAGE_TAG__CHALLENGER=v1.0.0
+IMAGE_TAG__CHALLENGER=2.2.2
 
 # L1 node that the op-node (Bedrock) will get chain data from.
 # To ensure reliability node operators may wish to change this to point at a service they trust.

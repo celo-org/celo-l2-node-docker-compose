@@ -50,6 +50,7 @@ exec op-node \
   --metrics.port=7300 \
   --syncmode=execution-layer \
   --verifier.l1-confs=4 \
+  --safedb.path=/shared/safedb \
   --p2p.priv.path=/shared/op-node_p2p_priv.txt \
   --p2p.peerstore.path=/shared/opnode_peerstore_db \
   $EXTENDED_ARG $@
